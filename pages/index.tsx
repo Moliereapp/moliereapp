@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Head from 'next/head'
 import { useLocalStorage } from '../lib/useLocalStorage'
 import BottomNav from '../components/BottomNav'
-import ScreenAccueilIA from '../components/moliere-accueil-v2'
+import ScreenAccueilV2 from '../components/moliere-accueil-v2'
 import ScreenQuiz from '../components/ScreenQuiz'
 import ScreenHistorique from '../components/ScreenHistorique'
 import ScreenProfil from '../components/ScreenProfil'
@@ -14,6 +14,7 @@ type MotIA = {
   mot: string
   nature: string
   theme: string
+  type?: string
   definition: string
   etymologie: string
   exemples: { texte: string; contexte: string }[]
@@ -23,7 +24,7 @@ type MotIA = {
 
 export default function Home() {
   const [screen, setScreen] = useState<Screen>('accueil')
-  const [motCharge, setMotCharge] = useState<MotIA | null>(null)
+  const [motsCharges, setMotsCharges] = useState<MotIA[]>([])
 
   const [favoris, setFavoris] = useLocalStorage<string[]>('favoris_v2', [])
   const [motUtilises, setMotUtilises] = useLocalStorage<string[]>('mots_utilises_v2', [])
@@ -32,20 +33,18 @@ export default function Home() {
   const [scoreTotal, setScoreTotal] = useLocalStorage<number>('score_total', 0)
   const [motsVusCount, setMotsVusCount] = useLocalStorage<number>('mots_vus_count', 0)
 
-  const motUtiliseAujourdhui = motCharge ? motUtilises.includes(motCharge.mot) : false
-
   function toggleFavori(mot: string) {
     setFavoris(favoris.includes(mot) ? favoris.filter(f => f !== mot) : [...favoris, mot])
   }
 
-  function marquerUtilise() {
-    if (motCharge && !motUtiliseAujourdhui) {
-      setMotUtilises([...motUtilises, motCharge.mot])
+  function marquerUtilise(mot: string) {
+    if (!motUtilises.includes(mot)) {
+      setMotUtilises([...motUtilises, mot])
     }
   }
 
-  function onMotCharge(mot: MotIA) {
-    setMotCharge(mot)
+  function onMotsCharges(mots: MotIA[]) {
+    setMotsCharges(mots)
     setMotsVusCount(motsVusCount + 1)
   }
 
@@ -53,6 +52,19 @@ export default function Home() {
     setQuizCompletes(quizCompletes + 1)
     setScoreTotal(scoreTotal + score)
   }
+
+  const motsQuiz = motsCharges.length > 0
+    ? motsCharges.filter(m => m.type !== 'expression').map((m, i) => ({
+        id: i + 1,
+        mot: m.mot,
+        nature: m.nature,
+        theme: m.theme,
+        definition: m.definition,
+        etymologie: m.etymologie,
+        exemples: m.exemples,
+        quiz: m.quiz,
+      }))
+    : MOTS
 
   return (
     <>
@@ -62,8 +74,15 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
       </Head>
 
-      <div style={{ maxWidth: '420px', margin: '0 auto', minHeight: '100vh', background: '#111', display: 'flex', flexDirection: 'column', borderLeft: '1px solid #3A3A3A', borderRight: '1px solid #3A3A3A' }}>
-        <header style={{ background: '#F5C842', padding: '14px 18px 10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{
+        maxWidth: '420px', margin: '0 auto', minHeight: '100vh',
+        background: '#111', display: 'flex', flexDirection: 'column',
+        borderLeft: '1px solid #3A3A3A', borderRight: '1px solid #3A3A3A',
+      }}>
+        <header style={{
+          background: '#F5C842', padding: '14px 18px 10px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        }}>
           <span style={{ fontFamily: 'Georgia, serif', fontSize: '22px', fontWeight: 700, color: '#111', letterSpacing: '-0.5px' }}>
             Mo<span style={{ color: '#E8402A' }}>l</span>ière
           </span>
@@ -79,7 +98,7 @@ export default function Home() {
 
         <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           {screen === 'accueil' && (
-            <ScreenAccueilIA
+            <ScreenAccueilV2
               favoris={favoris}
               motsUtilises={motUtilises}
               onToggleFavori={toggleFavori}
@@ -89,16 +108,7 @@ export default function Home() {
           )}
           {screen === 'quiz' && (
             <ScreenQuiz
-              mots={motCharge ? [{
-                id: 1,
-                mot: motCharge.mot,
-                nature: motCharge.nature,
-                theme: motCharge.theme,
-                definition: motCharge.definition,
-                etymologie: motCharge.etymologie,
-                exemples: motCharge.exemples,
-                quiz: motCharge.quiz,
-              }, ...MOTS.slice(0, 3)] : MOTS}
+              mots={motsQuiz.length > 0 ? motsQuiz : MOTS}
               onQuizComplete={onQuizComplete}
             />
           )}
