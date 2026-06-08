@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 
 type Exemple = { texte: string; contexte: string }
 type MotJour = {
   mot: string
   nature: string
   theme: string
-  type?: 'mot' | 'expression'
+  type?: string
   definition: string
   etymologie: string
   exemples: Exemple[]
@@ -35,7 +35,7 @@ const COULEURS_THEME: Record<string, string> = {
   'Expression': '#6D28D9',
 }
 
-function CarteMotJour({ mot, estFavori, estUtilise, onToggleFavori, onMarquerUtilise, index, total }: {
+function CarteMotJour({ mot, estFavori, estUtilise, onToggleFavori, onMarquerUtilise, index, total, onPrev, onNext }: {
   mot: MotJour
   estFavori: boolean
   estUtilise: boolean
@@ -43,6 +43,8 @@ function CarteMotJour({ mot, estFavori, estUtilise, onToggleFavori, onMarquerUti
   onMarquerUtilise: () => void
   index: number
   total: number
+  onPrev: () => void
+  onNext: () => void
 }) {
   const couleur = COULEURS_THEME[mot.theme] || '#2563EB'
   const estExpression = mot.type === 'expression'
@@ -51,25 +53,36 @@ function CarteMotJour({ mot, estFavori, estUtilise, onToggleFavori, onMarquerUti
     <div style={{
       height: '100%', width: '100%',
       display: 'flex', flexDirection: 'column',
-      background: '#111', flexShrink: 0,
-      scrollSnapAlign: 'start',
+      background: '#111',
+      animation: 'fadeIn 0.3s ease',
     }}>
-      {/* Header coloré */}
-      <div style={{ background: '#F5C842', padding: '0 18px 20px' }}>
+      <style>{`@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+
+      {/* Header */}
+      <div style={{ background: '#F5C842', padding: '0 18px 20px', flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '16px', marginBottom: '8px' }}>
           {estExpression && (
-            <span style={{ background: '#6D28D9', color: '#EDE9FE', fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: '20px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            <span style={{ background: '#6D28D9', color: '#EDE9FE', fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: '20px', textTransform: 'uppercase' }}>
               Expression
             </span>
           )}
           <span style={{ background: '#111', color: '#F5C842', fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: '20px' }}>
             {mot.theme}
           </span>
-          <span style={{ marginLeft: 'auto', fontSize: '11px', color: '#555', fontWeight: 500 }}>
-            {index + 1} / {total}
-          </span>
+          {/* Indicateur de page */}
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: '5px', alignItems: 'center' }}>
+            {Array.from({ length: total }).map((_, i) => (
+              <div key={i} style={{
+                width: i === index ? '16px' : '6px',
+                height: '6px',
+                borderRadius: '3px',
+                background: i === index ? '#111' : 'rgba(0,0,0,0.25)',
+                transition: 'all 0.3s',
+              }} />
+            ))}
+          </div>
         </div>
-        <h1 style={{ fontFamily: 'Georgia, serif', fontSize: estExpression ? '28px' : '38px', fontWeight: 700, color: '#111', lineHeight: 1.1, marginBottom: '4px' }}>
+        <h1 style={{ fontFamily: 'Georgia, serif', fontSize: estExpression ? '26px' : '36px', fontWeight: 700, color: '#111', lineHeight: 1.1, marginBottom: '4px' }}>
           {mot.mot}
         </h1>
         {!estExpression && (
@@ -77,7 +90,7 @@ function CarteMotJour({ mot, estFavori, estUtilise, onToggleFavori, onMarquerUti
         )}
       </div>
 
-      {/* Corps */}
+      {/* Corps scrollable */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px 18px', background: '#111' }}>
         <p style={labelStyle}>Définition</p>
         <div style={{ background: '#1C1C1C', borderRadius: '12px', padding: '14px', fontSize: '14px', lineHeight: 1.6, color: '#F0F0F0', borderLeft: `4px solid ${couleur}` }}>
@@ -106,15 +119,21 @@ function CarteMotJour({ mot, estFavori, estUtilise, onToggleFavori, onMarquerUti
         </div>
 
         <button onClick={onMarquerUtilise} disabled={estUtilise}
-          style={{ width: '100%', marginTop: '8px', marginBottom: '16px', padding: '11px', borderRadius: '10px', border: estUtilise ? '2px solid #16A34A' : '2px dashed #16A34A', background: estUtilise ? '#16A34A' : '#0A1F10', color: estUtilise ? '#111' : '#4ADE80', fontSize: '13px', fontWeight: 500, cursor: estUtilise ? 'default' : 'pointer' }}>
+          style={{ width: '100%', marginTop: '8px', padding: '11px', borderRadius: '10px', border: estUtilise ? '2px solid #16A34A' : '2px dashed #16A34A', background: estUtilise ? '#16A34A' : '#0A1F10', color: estUtilise ? '#111' : '#4ADE80', fontSize: '13px', fontWeight: 500, cursor: estUtilise ? 'default' : 'pointer' }}>
           {estUtilise ? '✓ Utilisé aujourd\'hui !' : '✓ Je l\'ai utilisé aujourd\'hui !'}
         </button>
+      </div>
 
-        {index < total - 1 && (
-          <p style={{ textAlign: 'center', color: '#A0A0A0', fontSize: '12px', marginBottom: '8px' }}>
-            ↓ Défiler pour le mot suivant
-          </p>
-        )}
+      {/* Navigation bas */}
+      <div style={{ display: 'flex', gap: '10px', padding: '12px 18px', background: '#111', borderTop: '1px solid #2A2A2A', flexShrink: 0 }}>
+        <button onClick={onPrev} disabled={index === 0}
+          style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid #3A3A3A', background: index === 0 ? '#1A1A1A' : '#1C1C1C', color: index === 0 ? '#444' : '#F0F0F0', fontSize: '14px', cursor: index === 0 ? 'default' : 'pointer', fontWeight: 500 }}>
+          ← Précédent
+        </button>
+        <button onClick={onNext} disabled={index === total - 1}
+          style={{ flex: 1, padding: '10px', borderRadius: '10px', border: 'none', background: index === total - 1 ? '#1A1A1A' : '#F5C842', color: index === total - 1 ? '#444' : '#111', fontSize: '14px', cursor: index === total - 1 ? 'default' : 'pointer', fontWeight: 500 }}>
+          Suivant →
+        </button>
       </div>
     </div>
   )
@@ -122,20 +141,22 @@ function CarteMotJour({ mot, estFavori, estUtilise, onToggleFavori, onMarquerUti
 
 export default function ScreenAccueilV2({ favoris, motsUtilises, onToggleFavori, onMarquerUtilise, onMotsCharges }: Props) {
   const [mots, setMots] = useState<MotJour[]>([])
+  const [index, setIndex] = useState(0)
   const [loading, setLoading] = useState(true)
   const [erreur, setErreur] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0]
     const cache = localStorage.getItem(`mots_${today}`)
 
     if (cache) {
-      const cached = JSON.parse(cache)
-      setMots(cached)
-      onMotsCharges(cached)
-      setLoading(false)
-      return
+      try {
+        const cached = JSON.parse(cache)
+        setMots(cached)
+        onMotsCharges(cached)
+        setLoading(false)
+        return
+      } catch {}
     }
 
     fetch('/api/mots-du-jour')
@@ -169,24 +190,21 @@ export default function ScreenAccueilV2({ favoris, motsUtilises, onToggleFavori,
     </div>
   )
 
+  const mot = mots[index]
+
   return (
-    <div ref={containerRef} style={{
-      flex: 1, overflowY: 'scroll', scrollSnapType: 'y mandatory',
-      display: 'flex', flexDirection: 'column',
-    }}>
-      {mots.map((mot, i) => (
-        <div key={i} style={{ height: '100%', flexShrink: 0, scrollSnapAlign: 'start' }}>
-          <CarteMotJour
-            mot={mot}
-            estFavori={favoris.includes(mot.mot)}
-            estUtilise={motsUtilises.includes(mot.mot)}
-            onToggleFavori={() => onToggleFavori(mot.mot)}
-            onMarquerUtilise={() => onMarquerUtilise(mot.mot)}
-            index={i}
-            total={mots.length}
-          />
-        </div>
-      ))}
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <CarteMotJour
+        mot={mot}
+        estFavori={favoris.includes(mot.mot)}
+        estUtilise={motsUtilises.includes(mot.mot)}
+        onToggleFavori={() => onToggleFavori(mot.mot)}
+        onMarquerUtilise={() => onMarquerUtilise(mot.mot)}
+        index={index}
+        total={mots.length}
+        onPrev={() => setIndex(i => Math.max(0, i - 1))}
+        onNext={() => setIndex(i => Math.min(mots.length - 1, i + 1))}
+      />
     </div>
   )
 }
