@@ -1,80 +1,31 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-const THEMES = ['Littérature', 'Philosophie', 'Sciences', 'Vie quotidienne', 'Histoire', 'Art']
-
-function getThemeDuJour(): string {
-  const index = Math.floor(new Date().getTime() / (1000 * 60 * 60 * 24)) % THEMES.length
-  return THEMES[index]
-}
+const BANQUE_MOTS = [
+  { mot: "Palimpseste", nature: "nom masculin", theme: "Littérature", definition: "Parchemin dont on a effacé l'écriture pour y écrire un nouveau texte, mais dont les traces originales restent partiellement visibles.", etymologie: "Du grec palímpsestos — « gratté de nouveau »", exemples: [{ texte: "Cette ville est un palimpseste vivant : sous chaque façade moderne affleurent des traces médiévales.", contexte: "Usage figuré" }, { texte: "Sa mémoire était un palimpseste : les souvenirs d'enfance transparaissaient sous les années.", contexte: "Métaphore poétique" }, { texte: "L'archéologue étudia avec soin le palimpseste découvert dans le monastère.", contexte: "Contexte historique" }], quiz: { correct: "Parchemin dont l'écriture originale reste visible sous un nouveau texte.", wrongs: ["Ornement architectural antique.", "Technique picturale à la cire.", "Instrument à cordes pincées."], anecdote: "Un palimpseste révèle les traces du passé sous le présent — une belle métaphore pour la mémoire !" } },
+  { mot: "Sérendipité", nature: "nom féminin", theme: "Sciences", definition: "Faculté de faire par hasard des découvertes heureuses et inattendues tout en cherchant autre chose.", etymologie: "De l'anglais serendipity, forgé par Horace Walpole d'après un conte persan", exemples: [{ texte: "La découverte de la pénicilline est un exemple célèbre de sérendipité scientifique.", contexte: "Histoire des sciences" }, { texte: "C'est par pure sérendipité qu'il trouva l'amour de sa vie dans ce café.", contexte: "Usage romantique" }, { texte: "La sérendipité est souvent sous-estimée dans les grandes découvertes.", contexte: "Réflexion philosophique" }], quiz: { correct: "Faculté de faire des découvertes heureuses par hasard en cherchant autre chose.", wrongs: ["Art de prévoir les événements futurs.", "Capacité à mémoriser de grandes quantités d'informations.", "Technique de méditation orientale."], anecdote: "Fleming cherchait un antibiotique et une moisissure contamina sa boîte — c'était la pénicilline !" } },
+  { mot: "Velléitaire", nature: "adjectif", theme: "Vie quotidienne", definition: "Qui n'a que des intentions faibles, sans jamais passer à l'acte ; qui manque de volonté.", etymologie: "Du latin velleitas — « volonté faible »", exemples: [{ texte: "Son attitude velléitaire l'empêchait de mener ses projets à terme.", contexte: "Description de caractère" }, { texte: "Il était trop velléitaire pour s'imposer une discipline sportive.", contexte: "Usage courant" }, { texte: "La politique velléitaire du gouvernement déçut ses partisans.", contexte: "Contexte politique" }], quiz: { correct: "Qui n'a que des intentions faibles et ne passe jamais à l'acte.", wrongs: ["Qui agit avec une énergie exceptionnelle.", "Qui change d'avis par excès de prudence.", "Qui souffre d'une timidité maladive."], anecdote: "Un velléitaire veut tout mais ne fait rien — la velléité est l'antichambre de l'inaction !" } },
+  { mot: "Ostracisme", nature: "nom masculin", theme: "Histoire", definition: "Exclusion d'une personne d'un groupe social ou professionnel par une décision collective.", etymologie: "Du grec ostrakon — « coquille », car les Athéniens votaient l'exil sur des tessons de poterie", exemples: [{ texte: "Il fut victime d'ostracisme après avoir dénoncé les pratiques douteuses de l'entreprise.", contexte: "Monde professionnel" }, { texte: "L'ostracisme social peut avoir des effets dévastateurs sur la santé mentale.", contexte: "Psychologie" }, { texte: "Dans l'Athènes antique, l'ostracisme permettait d'exiler un citoyen jugé dangereux.", contexte: "Histoire ancienne" }], quiz: { correct: "Exclusion d'une personne d'un groupe par décision collective.", wrongs: ["Cérémonie de bienvenue tribale.", "Technique de négociation diplomatique.", "Forme de taxation sur les produits de luxe."], anecdote: "À Athènes, 6000 votes suffisaient pour exiler quelqu'un 10 ans — gravés sur des tessons de poterie !" } },
+  { mot: "Catharsis", nature: "nom féminin", theme: "Littérature", definition: "Purification des passions par l'art, notamment le théâtre ; soulagement émotionnel profond.", etymologie: "Du grec katharsis — « purification »", exemples: [{ texte: "La tragédie grecque visait la catharsis : faire pleurer le spectateur pour le libérer.", contexte: "Histoire du théâtre" }, { texte: "Écrire ce roman fut pour lui une véritable catharsis après des années de souffrance.", contexte: "Création littéraire" }, { texte: "La psychanalyse utilise la catharsis pour libérer les traumatismes enfouis.", contexte: "Psychologie" }], quiz: { correct: "Purification des passions par l'art ; soulagement émotionnel.", wrongs: ["Technique rhétorique pour convaincre.", "Procédé de distillation en chimie.", "Forme de méditation collective."], anecdote: "Aristote pensait que pleurer au théâtre était sain — cela purgeait les émotions négatives !" } },
+  { mot: "Paradigme", nature: "nom masculin", theme: "Sciences", definition: "Modèle théorique dominant qui oriente la recherche scientifique ou la pensée d'une époque.", etymologie: "Du grec paradeigma — « modèle, exemple »", exemples: [{ texte: "La révolution copernicienne fut un changement de paradigme majeur dans l'histoire des sciences.", contexte: "Histoire des sciences" }, { texte: "Le numérique a imposé un nouveau paradigme dans l'industrie musicale.", contexte: "Transformation économique" }, { texte: "Nous vivons un changement de paradigme dans notre rapport au travail.", contexte: "Société contemporaine" }], quiz: { correct: "Modèle théorique dominant qui oriente la pensée d'une époque.", wrongs: ["Ensemble de règles grammaticales.", "Appareil de mesure en physique.", "Technique de présentation visuelle."], anecdote: "Thomas Kuhn a montré que la science avance par révolutions, par sauts de paradigme !" } },
+  { mot: "Tergiverser", nature: "verbe", theme: "Vie quotidienne", definition: "User de détours, d'atermoiements pour éviter de prendre une décision claire.", etymologie: "Du latin tergiversari — « tourner le dos »", exemples: [{ texte: "Arrête de tergiverser et donne-moi une réponse claire !", contexte: "Injonction directe" }, { texte: "Le ministre tergiversa pendant des semaines avant d'annoncer sa décision.", contexte: "Politique" }, { texte: "Sa tendance à tergiverser lui avait coûté plusieurs opportunités.", contexte: "Trait de caractère" }], quiz: { correct: "User de détours pour éviter de prendre une décision.", wrongs: ["Parler avec grande éloquence.", "Changer d'opinion brutalement.", "Agir avec précipitation."], anecdote: "Tourner le dos en latin — tergiverser c'est littéralement fuir la réalité !" } },
+  { mot: "Apocryphe", nature: "adjectif", theme: "Littérature", definition: "Dont l'authenticité est douteuse ou contestée ; qui n'est pas reconnu comme authentique.", etymologie: "Du grec apokryphos — « caché, secret »", exemples: [{ texte: "Ce tableau attribué à Rembrandt est considéré comme apocryphe par les experts.", contexte: "Art et authenticité" }, { texte: "De nombreuses citations apocryphes circulent sur Internet sous des noms célèbres.", contexte: "Culture numérique" }, { texte: "Les évangiles apocryphes racontent la vie de Jésus de manière non officielle.", contexte: "Histoire religieuse" }], quiz: { correct: "Dont l'authenticité est douteuse ou non reconnue.", wrongs: ["Écrit en caractères anciens illisibles.", "Provenant d'une source étrangère mal traduite.", "Réservé aux initiés d'une société secrète."], anecdote: "La plupart des citations célèbres sur internet sont apocryphes — attribuées à tort à des génies !" } },
+  { mot: "Ubiquité", nature: "nom féminin", theme: "Philosophie", definition: "Capacité supposée d'être présent en plusieurs endroits à la fois.", etymologie: "Du latin ubique — « partout »", exemples: [{ texte: "Il avait le don d'ubiquité : on le croisait partout en même temps.", contexte: "Usage hyperbolique" }, { texte: "Internet a créé une forme d'ubiquité numérique de l'information.", contexte: "Monde digital" }, { texte: "Le manager se plaignait de ne pas avoir le don d'ubiquité.", contexte: "Vie professionnelle" }], quiz: { correct: "Capacité supposée d'être présent en plusieurs endroits à la fois.", wrongs: ["Art de se rendre invisible.", "Faculté de mémoriser des lieux.", "Capacité à communiquer par la pensée."], anecdote: "Seul Dieu peut être partout à la fois — voilà pourquoi l'ubiquité fascine autant les philosophes !" } },
+  { mot: "Hégémonie", nature: "nom féminin", theme: "Histoire", definition: "Domination politique, culturelle ou économique d'un État ou d'un groupe sur les autres.", etymologie: "Du grec hêgemonia — « commandement, direction »", exemples: [{ texte: "L'hégémonie américaine sur la scène internationale est contestée depuis les années 2000.", contexte: "Géopolitique" }, { texte: "La Silicon Valley exerce une hégémonie culturelle sur le monde technologique.", contexte: "Économie numérique" }, { texte: "Au Ve siècle avant J.-C., Athènes cherchait à établir son hégémonie sur la Grèce.", contexte: "Histoire antique" }], quiz: { correct: "Domination d'un État ou d'un groupe sur les autres.", wrongs: ["Alliance défensive entre États.", "Système d'échange équitable.", "Philosophie de l'égalité absolue."], anecdote: "Sparte et Athènes se sont battues 27 ans pour l'hégémonie sur la Grèce — la guerre du Péloponnèse !" } },
+  { mot: "Inéluctable", nature: "adjectif", theme: "Philosophie", definition: "Qu'on ne peut éviter, contre quoi il est impossible de lutter ; inévitable.", etymologie: "Du latin ineluctabilis — « contre lequel on ne peut lutter »", exemples: [{ texte: "La mort est inéluctable, c'est pourquoi les philosophes l'ont toujours médité.", contexte: "Philosophie existentielle" }, { texte: "Le déclin de cette industrie face au numérique semblait inéluctable.", contexte: "Économie" }, { texte: "Face à la tempête, le naufrage paraissait inéluctable.", contexte: "Récit dramatique" }], quiz: { correct: "Qu'on ne peut éviter, contre quoi il est impossible de lutter.", wrongs: ["Qui se produit de manière surprenante.", "Qui dépend entièrement de la volonté.", "Qui peut être évité par une bonne préparation."], anecdote: "Les Moires grecques filaient, mesuraient et coupaient le fil de la vie — inéluctablement !" } },
+  { mot: "Délétère", nature: "adjectif", theme: "Sciences", definition: "Qui nuit à la santé, à l'esprit ou à la société ; nuisible, nocif.", etymologie: "Du grec dêlêtêrios — « qui détruit »", exemples: [{ texte: "Les effets délétères du tabac sur la santé sont désormais bien documentés.", contexte: "Médecine" }, { texte: "Cette ambiance délétère au bureau nuisait à la productivité de toute l'équipe.", contexte: "Environnement de travail" }, { texte: "Les réseaux sociaux peuvent avoir une influence délétère sur l'estime de soi.", contexte: "Psychologie moderne" }], quiz: { correct: "Qui nuit à la santé ou à l'esprit ; nocif.", wrongs: ["Qui présente une texture douce.", "Qui favorise la croissance.", "Relatif à la destruction créatrice."], anecdote: "Les mineurs emmenaient un canari — s'il mourait, les gaz délétères étaient présents !" } },
+  { mot: "Frugalité", nature: "nom féminin", theme: "Vie quotidienne", definition: "Qualité de celui qui se contente de peu, qui évite toute dépense ou consommation superflue.", etymologie: "Du latin frugalitas — « économie, sobriété »", exemples: [{ texte: "Sa frugalité légendaire lui avait permis d'économiser une fortune en trente ans.", contexte: "Mode de vie" }, { texte: "Les stoïciens prônaient la frugalité comme voie vers la liberté intérieure.", contexte: "Philosophie" }, { texte: "La frugalité revient en grâce avec les préoccupations écologiques.", contexte: "Société contemporaine" }], quiz: { correct: "Qualité de celui qui se contente de peu, évitant tout superflu.", wrongs: ["Goût pour la gastronomie.", "Tendance à accumuler des biens.", "Capacité à gérer un budget professionnel."], anecdote: "Diogène vivait dans un tonneau — jusqu'au jour où il vit un enfant boire dans ses mains et jeta son écuelle !" } },
+  { mot: "Syncrétisme", nature: "nom masculin", theme: "Histoire", definition: "Fusion ou combinaison de doctrines, de cultures ou de pratiques différentes en un système cohérent.", etymologie: "Du grec synkrêtismos — « alliance des Crétois »", exemples: [{ texte: "Le syncrétisme religieux au Brésil mêle catholicisme et traditions africaines.", contexte: "Religion comparée" }, { texte: "Le jazz est un exemple de syncrétisme musical entre cultures africaine et européenne.", contexte: "Musique" }, { texte: "Sa philosophie était un syncrétisme de bouddhisme et de stoïcisme.", contexte: "Philosophie personnelle" }], quiz: { correct: "Fusion de doctrines ou de cultures différentes en un système cohérent.", wrongs: ["Opposition radicale entre deux systèmes.", "Technique de traduction littérale.", "Étude comparée des religions."], anecdote: "Les esclaves africains cachaient leurs dieux derrière les saints catholiques — un syncrétisme de survie !" } },
+  { mot: "Pérorer", nature: "verbe", theme: "Vie quotidienne", definition: "Discourir longuement et prétentieusement, avec une affectation de savoir ou d'importance.", etymologie: "Du latin perorare — « plaider jusqu'au bout »", exemples: [{ texte: "Il pérorait depuis une heure sans que personne n'ose l'interrompre.", contexte: "Réunion" }, { texte: "Le conférencier pérorait sur des sujets dont il ignorait visiblement tout.", contexte: "Monde académique" }, { texte: "Arrête de pérorer et viens nous aider !", contexte: "Usage familier" }], quiz: { correct: "Discourir longuement et prétentieusement avec affectation.", wrongs: ["Chanter faux de manière répétée.", "Argumenter brillamment pour une cause.", "Parler tout bas pour ne pas être entendu."], anecdote: "Les avocats romains qui concluaient trop longuement leur plaidoirie péroraient — au sens propre !" } },
+]
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Méthode non autorisée' })
 
-  const apiKey = process.env.OPENROUTER_API_KEY
-  if (!apiKey) return res.status(500).json({ error: 'Clé API manquante' })
-
-  const theme = getThemeDuJour()
   const today = new Date().toISOString().split('T')[0]
+  const debut = new Date('2024-01-01').getTime()
+  const joursEcoules = Math.floor((new Date().getTime() - debut) / (1000 * 60 * 60 * 24))
+  const index = joursEcoules % BANQUE_MOTS.length
+  const mot = BANQUE_MOTS[index]
 
-  const prompt = `Tu es un expert de la langue française. Génère un mot rare et peu utilisé du registre "${theme}".
-
-Réponds UNIQUEMENT avec un objet JSON valide, sans texte avant ou après, sans balises markdown :
-
-{
-  "mot": "le mot",
-  "nature": "nom masculin / nom féminin / adjectif / verbe / etc.",
-  "theme": "${theme}",
-  "definition": "définition claire et précise en 1-2 phrases",
-  "etymologie": "origine du mot (langue + sens original)",
-  "exemples": [
-    { "texte": "phrase d'exemple avec le mot en contexte", "contexte": "type d'usage" },
-    { "texte": "deuxième phrase d'exemple", "contexte": "type d'usage" },
-    { "texte": "troisième phrase d'exemple", "contexte": "type d'usage" }
-  ],
-  "quiz": {
-    "correct": "la vraie définition courte pour le quiz",
-    "wrongs": [
-      "fausse définition crédible 1",
-      "fausse définition crédible 2",
-      "fausse définition crédible 3"
-    ],
-    "anecdote": "fait intéressant sur l'étymologie ou l'usage de ce mot"
-  }
-}`
-
-  try {
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://moliereapp.vercel.app',
-        'X-Title': 'Molière App',
-      },
-      body: JSON.stringify({
-        model: 'nvidia/llama-3.1-nemotron-ultra-253b-v1:free',
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.8,
-      }),
-    })
-
-    if (!response.ok) {
-      const err = await response.text()
-      return res.status(500).json({ error: 'Erreur OpenRouter', details: err })
-    }
-
-    const data = await response.json()
-    const content = data.choices?.[0]?.message?.content
-
-    if (!content) return res.status(500).json({ error: 'Réponse vide de l\'IA' })
-
-    const cleaned = content.replace(/```json|```/g, '').trim()
-    const mot = JSON.parse(cleaned)
-
-    return res.status(200).json({ ...mot, id: today, date: today })
-
-  } catch (err) {
-    console.error('Erreur génération mot:', err)
-    return res.status(500).json({ error: 'Erreur lors de la génération du mot' })
-  }
+  return res.status(200).json({ ...mot, id: today, date: today })
 }
