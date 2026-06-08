@@ -81,7 +81,7 @@ export default function Home() {
           {screen === 'accueil' && (
             <ScreenAccueilIA
               favoris={favoris}
-              motUtilise={motUtiliseAujourdhui}
+              motsUtilises={motUtilises}
               onToggleFavori={toggleFavori}
               onMarquerUtilise={marquerUtilise}
               onMotsCharges={onMotsCharges}
