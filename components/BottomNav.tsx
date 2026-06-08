@@ -1,4 +1,4 @@
-type Screen = 'accueil' | 'quiz' | 'historique' | 'profil'
+type Screen = 'accueil' | 'quiz' | 'carnet' | 'historique' | 'profil'
 
 type Props = {
   active: Screen
@@ -9,16 +9,18 @@ export default function BottomNav({ active, onChange }: Props) {
   const items: { id: Screen; label: string; icon: string }[] = [
     { id: 'accueil', label: 'Accueil', icon: '⌂' },
     { id: 'quiz', label: 'Quiz', icon: '◈' },
+    { id: 'carnet', label: 'Carnet', icon: '✎' },
     { id: 'historique', label: 'Mots appris', icon: '☰' },
     { id: 'profil', label: 'Profil', icon: '◉' },
   ]
 
   return (
     <nav style={{
-      borderTop: '1px solid #3A3A3A',
+      borderTop: '1px solid #2A2A2A',
       display: 'flex',
       background: '#111',
       padding: '6px 0 12px',
+      flexShrink: 0,
     }}>
       {items.map(item => (
         <button
@@ -33,10 +35,11 @@ export default function BottomNav({ active, onChange }: Props) {
             border: 'none',
             background: 'none',
             padding: '4px 0',
-            color: active === item.id ? '#F5C842' : '#A0A0A0',
-            fontSize: '10px',
-            fontFamily: 'var(--font-body)',
+            color: active === item.id ? '#F5C842' : '#555',
+            fontSize: '9px',
+            fontFamily: 'inherit',
             fontWeight: 500,
+            cursor: 'pointer',
             transition: 'color 0.15s',
           }}
         >
@@ -47,7 +50,7 @@ export default function BottomNav({ active, onChange }: Props) {
             opacity: active === item.id ? 1 : 0,
             transition: 'opacity 0.15s',
           }} />
-          <span style={{ fontSize: '20px', lineHeight: 1 }}>{item.icon}</span>
+          <span style={{ fontSize: '18px', lineHeight: 1 }}>{item.icon}</span>
           {item.label}
         </button>
       ))}
