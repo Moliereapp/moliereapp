@@ -155,9 +155,17 @@ export default function ScreenAccueilV2({ favoris, motsUtilises, onToggleFavori,
             <p style={labelStyle}>Définition</p>
             <div style={{ background: '#1C1C1C', borderRadius: '12px', padding: '13px', fontSize: '14px', lineHeight: 1.6, color: '#F0F0F0', borderLeft: `4px solid ${couleur}` }}>
               {mot.definition}
+              
               <p style={{ fontSize: '12px', color: '#A0A0A0', marginTop: '6px', fontStyle: 'italic' }}>{mot.etymologie}</p>
             </div>
-
+{mot.synonymes && mot.synonymes.length > 0 && (
+  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '10px', marginBottom: '4px' }}>
+    <span style={{ fontSize: '11px', color: '#A0A0A0', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '1px', alignSelf: 'center' }}>Synonymes :</span>
+    {mot.synonymes.map((s: string, i: number) => (
+      <span key={i} style={{ background: '#272727', color: '#C0C0C0', fontSize: '12px', padding: '3px 10px', borderRadius: '20px', border: '1px solid #3A3A3A' }}>{s}</span>
+    ))}
+  </div>
+)}
             <p style={labelStyle}>Exemples</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
               {mot.exemples.map((ex, i) => (
