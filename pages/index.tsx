@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Head from 'next/head'
 import { useLocalStorage } from '../lib/useLocalStorage'
 import BottomNav from '../components/BottomNav'
-import ScreenAccueilIA from '../components/ScreenAccueilIA'
+import ScreenAccueilIA from '../components/ScreenAccueilV2'
 import ScreenQuiz from '../components/ScreenQuiz'
 import ScreenHistorique from '../components/ScreenHistorique'
 import ScreenProfil from '../components/ScreenProfil'
@@ -84,7 +84,7 @@ export default function Home() {
               motUtilise={motUtiliseAujourdhui}
               onToggleFavori={toggleFavori}
               onMarquerUtilise={marquerUtilise}
-              onMotCharge={onMotCharge}
+              onMotsCharges={onMotsCharges}
             />
           )}
           {screen === 'quiz' && (
