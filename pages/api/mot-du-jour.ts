@@ -52,7 +52,7 @@ Réponds UNIQUEMENT avec un objet JSON valide, sans texte avant ou après, sans 
         'X-Title': 'Molière App',
       },
       body: JSON.stringify({
-        model: 'mistralai/mistral-7b-instruct:free',
+        model: 'meta-llama/llama-3.2-3b-instruct:free',
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.8,
       }),
