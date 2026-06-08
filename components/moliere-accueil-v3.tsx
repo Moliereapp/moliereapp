@@ -6,6 +6,7 @@ type MotJour = {
   nature: string
   theme: string
   type?: string
+  synonymes?: string[]
   definition: string
   etymologie: string
   exemples: Exemple[]
