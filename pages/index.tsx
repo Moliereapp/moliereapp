@@ -46,7 +46,7 @@ export default function Home() {
 
   function onMotCharge(mot: MotIA) {
     setMotCharge(mot)
-    setMotsVusCount((c: number) => c + 1)
+    setMotsVusCount(motsVusCount + 1)
   }
 
   function onQuizComplete(score: number) {
