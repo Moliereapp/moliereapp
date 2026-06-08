@@ -52,7 +52,7 @@ Réponds UNIQUEMENT avec un objet JSON valide, sans texte avant ou après, sans 
         'X-Title': 'Molière App',
       },
       body: JSON.stringify({
-        model: 'meta-llama/llama-4-scout:free',
+        model: 'nvidia/llama-3.1-nemotron-ultra-253b-v1:free',
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.8,
       }),
