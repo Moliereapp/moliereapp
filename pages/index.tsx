@@ -4,11 +4,12 @@ import { useLocalStorage } from '../lib/useLocalStorage'
 import BottomNav from '../components/BottomNav'
 import ScreenAccueilV2 from '../components/moliere-accueil-v3'
 import ScreenQuiz from '../components/ScreenQuiz'
+import ScreenCarnet from '../components/moliere-carnet'
 import ScreenHistorique from '../components/ScreenHistorique'
 import ScreenProfil from '../components/ScreenProfil'
 import { MOTS } from '../lib/mots'
 
-type Screen = 'accueil' | 'quiz' | 'historique' | 'profil'
+type Screen = 'accueil' | 'quiz' | 'carnet' | 'historique' | 'profil'
 
 type MotIA = {
   mot: string
@@ -38,9 +39,7 @@ export default function Home() {
   }
 
   function marquerUtilise(mot: string) {
-    if (!motUtilises.includes(mot)) {
-      setMotUtilises([...motUtilises, mot])
-    }
+    if (!motUtilises.includes(mot)) setMotUtilises([...motUtilises, mot])
   }
 
   function onMotsCharges(mots: MotIA[]) {
@@ -55,14 +54,9 @@ export default function Home() {
 
   const motsQuiz = motsCharges.length > 0
     ? motsCharges.filter(m => m.type !== 'expression').map((m, i) => ({
-        id: i + 1,
-        mot: m.mot,
-        nature: m.nature,
-        theme: m.theme,
-        definition: m.definition,
-        etymologie: m.etymologie,
-        exemples: m.exemples,
-        quiz: m.quiz,
+        id: i + 1, mot: m.mot, nature: m.nature, theme: m.theme,
+        definition: m.definition, etymologie: m.etymologie,
+        exemples: m.exemples, quiz: m.quiz,
       }))
     : MOTS
 
@@ -74,15 +68,8 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
       </Head>
 
-      <div style={{
-        maxWidth: '420px', margin: '0 auto', minHeight: '100vh',
-        background: '#111', display: 'flex', flexDirection: 'column',
-        borderLeft: '1px solid #3A3A3A', borderRight: '1px solid #3A3A3A',
-      }}>
-        <header style={{
-          background: '#F5C842', padding: '14px 18px 10px',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        }}>
+      <div style={{ maxWidth: '420px', margin: '0 auto', minHeight: '100vh', background: '#111', display: 'flex', flexDirection: 'column', borderLeft: '1px solid #2A2A2A', borderRight: '1px solid #2A2A2A' }}>
+        <header style={{ background: '#F5C842', padding: '14px 18px 10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
           <span style={{ fontFamily: 'Georgia, serif', fontSize: '22px', fontWeight: 700, color: '#111', letterSpacing: '-0.5px' }}>
             Mo<span style={{ color: '#E8402A' }}>l</span>ière
           </span>
@@ -107,26 +94,14 @@ export default function Home() {
             />
           )}
           {screen === 'quiz' && (
-            <ScreenQuiz
-              mots={motsQuiz.length > 0 ? motsQuiz : MOTS}
-              onQuizComplete={onQuizComplete}
-            />
+            <ScreenQuiz mots={motsQuiz.length > 0 ? motsQuiz : MOTS} onQuizComplete={onQuizComplete} />
           )}
+          {screen === 'carnet' && <ScreenCarnet />}
           {screen === 'historique' && (
-            <ScreenHistorique
-              mots={MOTS}
-              favoris={[]}
-              motUtilises={[]}
-            />
+            <ScreenHistorique mots={MOTS} favoris={[]} motUtilises={[]} />
           )}
           {screen === 'profil' && (
-            <ScreenProfil
-              streak={streak}
-              motsVus={motsVusCount}
-              quizCompletes={quizCompletes}
-              scoreTotal={scoreTotal}
-              motUtilises={motUtilises.length}
-            />
+            <ScreenProfil streak={streak} motsVus={motsVusCount} quizCompletes={quizCompletes} scoreTotal={scoreTotal} motUtilises={motUtilises.length} />
           )}
         </main>
 
