@@ -35,120 +35,17 @@ const COULEURS_THEME: Record<string, string> = {
   'Expression': '#6D28D9',
 }
 
-function CarteMotJour({ mot, estFavori, estUtilise, onToggleFavori, onMarquerUtilise, index, total, onPrev, onNext }: {
-  mot: MotJour
-  estFavori: boolean
-  estUtilise: boolean
-  onToggleFavori: () => void
-  onMarquerUtilise: () => void
-  index: number
-  total: number
-  onPrev: () => void
-  onNext: () => void
-}) {
-  const couleur = COULEURS_THEME[mot.theme] || '#2563EB'
-  const estExpression = mot.type === 'expression'
-
-  return (
-    <div style={{
-      height: '100%', width: '100%',
-      display: 'flex', flexDirection: 'column',
-      background: '#111',
-      animation: 'fadeIn 0.3s ease',
-    }}>
-      <style>{`@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }`}</style>
-
-      {/* Header */}
-      <div style={{ background: '#F5C842', padding: '0 18px 20px', flexShrink: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '16px', marginBottom: '8px' }}>
-          {estExpression && (
-            <span style={{ background: '#6D28D9', color: '#EDE9FE', fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: '20px', textTransform: 'uppercase' }}>
-              Expression
-            </span>
-          )}
-          <span style={{ background: '#111', color: '#F5C842', fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: '20px' }}>
-            {mot.theme}
-          </span>
-          {/* Indicateur de page */}
-          <div style={{ marginLeft: 'auto', display: 'flex', gap: '5px', alignItems: 'center' }}>
-            {Array.from({ length: total }).map((_, i) => (
-              <div key={i} style={{
-                width: i === index ? '16px' : '6px',
-                height: '6px',
-                borderRadius: '3px',
-                background: i === index ? '#111' : 'rgba(0,0,0,0.25)',
-                transition: 'all 0.3s',
-              }} />
-            ))}
-          </div>
-        </div>
-        <h1 style={{ fontFamily: 'Georgia, serif', fontSize: estExpression ? '26px' : '36px', fontWeight: 700, color: '#111', lineHeight: 1.1, marginBottom: '4px' }}>
-          {mot.mot}
-        </h1>
-        {!estExpression && (
-          <p style={{ fontSize: '13px', color: '#E8402A', fontStyle: 'italic' }}>{mot.nature}</p>
-        )}
-      </div>
-
-      {/* Corps scrollable */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '16px 18px', background: '#111' }}>
-        <p style={labelStyle}>Définition</p>
-        <div style={{ background: '#1C1C1C', borderRadius: '12px', padding: '14px', fontSize: '14px', lineHeight: 1.6, color: '#F0F0F0', borderLeft: `4px solid ${couleur}` }}>
-          {mot.definition}
-          <p style={{ fontSize: '12px', color: '#A0A0A0', marginTop: '8px', fontStyle: 'italic' }}>{mot.etymologie}</p>
-        </div>
-
-        <p style={labelStyle}>Exemples</p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {mot.exemples.map((ex, i) => (
-            <div key={i} style={{ background: '#1C1C1C', borderRadius: '10px', padding: '12px', fontSize: '13px', lineHeight: 1.5, color: '#F0F0F0', fontStyle: 'italic', borderLeft: `3px solid ${couleur}` }}>
-              « {ex.texte} »
-              <p style={{ fontSize: '11px', color: '#60A5FA', marginTop: '4px', fontStyle: 'normal', fontWeight: 500 }}>{ex.contexte}</p>
-            </div>
-          ))}
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '16px' }}>
-          <button onClick={onToggleFavori}
-            style={{ padding: '11px', borderRadius: '10px', border: estFavori ? '1.5px solid #E8402A' : '1.5px solid #3A3A3A', background: estFavori ? '#2D0A0A' : '#1C1C1C', fontSize: '13px', fontWeight: 500, color: estFavori ? '#FCA5A5' : '#F0F0F0', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', cursor: 'pointer' }}>
-            ♥ {estFavori ? 'Sauvegardé' : 'Favori'}
-          </button>
-          <button style={{ padding: '11px', borderRadius: '10px', border: '2px solid #F5C842', background: '#F5C842', color: '#111', fontSize: '13px', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', cursor: 'pointer' }}>
-            ↑ Partager
-          </button>
-        </div>
-
-        <button onClick={onMarquerUtilise} disabled={estUtilise}
-          style={{ width: '100%', marginTop: '8px', padding: '11px', borderRadius: '10px', border: estUtilise ? '2px solid #16A34A' : '2px dashed #16A34A', background: estUtilise ? '#16A34A' : '#0A1F10', color: estUtilise ? '#111' : '#4ADE80', fontSize: '13px', fontWeight: 500, cursor: estUtilise ? 'default' : 'pointer' }}>
-          {estUtilise ? '✓ Utilisé aujourd\'hui !' : '✓ Je l\'ai utilisé aujourd\'hui !'}
-        </button>
-      </div>
-
-      {/* Navigation bas */}
-      <div style={{ display: 'flex', gap: '10px', padding: '12px 18px', background: '#111', borderTop: '1px solid #2A2A2A', flexShrink: 0 }}>
-        <button onClick={onPrev} disabled={index === 0}
-          style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid #3A3A3A', background: index === 0 ? '#1A1A1A' : '#1C1C1C', color: index === 0 ? '#444' : '#F0F0F0', fontSize: '14px', cursor: index === 0 ? 'default' : 'pointer', fontWeight: 500 }}>
-          ← Précédent
-        </button>
-        <button onClick={onNext} disabled={index === total - 1}
-          style={{ flex: 1, padding: '10px', borderRadius: '10px', border: 'none', background: index === total - 1 ? '#1A1A1A' : '#F5C842', color: index === total - 1 ? '#444' : '#111', fontSize: '14px', cursor: index === total - 1 ? 'default' : 'pointer', fontWeight: 500 }}>
-          Suivant →
-        </button>
-      </div>
-    </div>
-  )
-}
-
 export default function ScreenAccueilV2({ favoris, motsUtilises, onToggleFavori, onMarquerUtilise, onMotsCharges }: Props) {
   const [mots, setMots] = useState<MotJour[]>([])
   const [index, setIndex] = useState(0)
+  const [direction, setDirection] = useState<'up' | 'down' | null>(null)
+  const [animating, setAnimating] = useState(false)
   const [loading, setLoading] = useState(true)
   const [erreur, setErreur] = useState(false)
 
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0]
     const cache = localStorage.getItem(`mots_${today}`)
-
     if (cache) {
       try {
         const cached = JSON.parse(cache)
@@ -158,7 +55,6 @@ export default function ScreenAccueilV2({ favoris, motsUtilises, onToggleFavori,
         return
       } catch {}
     }
-
     fetch('/api/mots-du-jour')
       .then(r => r.json())
       .then(data => {
@@ -171,6 +67,19 @@ export default function ScreenAccueilV2({ favoris, motsUtilises, onToggleFavori,
       })
       .catch(() => { setErreur(true); setLoading(false) })
   }, [])
+
+  function navigate(dir: 'up' | 'down') {
+    if (animating) return
+    if (dir === 'down' && index >= mots.length - 1) return
+    if (dir === 'up' && index <= 0) return
+    setDirection(dir)
+    setAnimating(true)
+    setTimeout(() => {
+      setIndex(i => dir === 'down' ? i + 1 : i - 1)
+      setDirection(null)
+      setAnimating(false)
+    }, 280)
+  }
 
   if (loading) return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#111', gap: '16px' }}>
@@ -191,25 +100,114 @@ export default function ScreenAccueilV2({ favoris, motsUtilises, onToggleFavori,
   )
 
   const mot = mots[index]
+  const couleur = COULEURS_THEME[mot.theme] || '#2563EB'
+  const estExpression = mot.type === 'expression'
+
+  const slideStyle: React.CSSProperties = {
+    transition: animating ? 'transform 0.28s cubic-bezier(0.4,0,0.2,1), opacity 0.28s' : 'none',
+    transform: animating
+      ? direction === 'down' ? 'translateY(-40px)' : 'translateY(40px)'
+      : 'translateY(0)',
+    opacity: animating ? 0 : 1,
+  }
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      <CarteMotJour
-        mot={mot}
-        estFavori={favoris.includes(mot.mot)}
-        estUtilise={motsUtilises.includes(mot.mot)}
-        onToggleFavori={() => onToggleFavori(mot.mot)}
-        onMarquerUtilise={() => onMarquerUtilise(mot.mot)}
-        index={index}
-        total={mots.length}
-        onPrev={() => setIndex(i => Math.max(0, i - 1))}
-        onNext={() => setIndex(i => Math.min(mots.length - 1, i + 1))}
-      />
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#111' }}>
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+
+      {/* Dots indicateurs */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', padding: '10px 0 6px', background: '#111' }}>
+        {mots.map((_, i) => (
+          <div key={i} onClick={() => { if (!animating) { setDirection(i > index ? 'down' : 'up'); setIndex(i) } }}
+            style={{ width: i === index ? '20px' : '7px', height: '7px', borderRadius: '4px', background: i === index ? '#F5C842' : '#333', transition: 'all 0.3s', cursor: 'pointer' }} />
+        ))}
+      </div>
+
+      {/* Carte principale */}
+      <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+        <div style={{ ...slideStyle, height: '100%', display: 'flex', flexDirection: 'column' }}>
+
+          {/* Header jaune */}
+          <div style={{ background: '#F5C842', padding: '12px 18px 18px', flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+              {estExpression && (
+                <span style={{ background: '#6D28D9', color: '#EDE9FE', fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '20px', textTransform: 'uppercase' }}>
+                  Expression
+                </span>
+              )}
+              <span style={{ background: '#111', color: '#F5C842', fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '20px' }}>
+                {mot.theme}
+              </span>
+              <span style={{ marginLeft: 'auto', fontSize: '11px', color: 'rgba(0,0,0,0.4)', fontWeight: 500 }}>
+                {index + 1} / {mots.length}
+              </span>
+            </div>
+            <h1 style={{ fontFamily: 'Georgia, serif', fontSize: estExpression ? '24px' : '34px', fontWeight: 700, color: '#111', lineHeight: 1.1, marginBottom: '3px' }}>
+              {mot.mot}
+            </h1>
+            {!estExpression && (
+              <p style={{ fontSize: '12px', color: '#E8402A', fontStyle: 'italic' }}>{mot.nature}</p>
+            )}
+          </div>
+
+          {/* Corps */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: '14px 18px' }}>
+            <p style={labelStyle}>Définition</p>
+            <div style={{ background: '#1C1C1C', borderRadius: '12px', padding: '13px', fontSize: '14px', lineHeight: 1.6, color: '#F0F0F0', borderLeft: `4px solid ${couleur}` }}>
+              {mot.definition}
+              <p style={{ fontSize: '12px', color: '#A0A0A0', marginTop: '6px', fontStyle: 'italic' }}>{mot.etymologie}</p>
+            </div>
+
+            <p style={labelStyle}>Exemples</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
+              {mot.exemples.map((ex, i) => (
+                <div key={i} style={{ background: '#1C1C1C', borderRadius: '10px', padding: '11px', fontSize: '13px', lineHeight: 1.5, color: '#F0F0F0', fontStyle: 'italic', borderLeft: `3px solid ${couleur}` }}>
+                  « {ex.texte} »
+                  <p style={{ fontSize: '11px', color: '#60A5FA', marginTop: '3px', fontStyle: 'normal', fontWeight: 500 }}>{ex.contexte}</p>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '14px' }}>
+              <button onClick={() => onToggleFavori(mot.mot)}
+                style={{ padding: '10px', borderRadius: '10px', border: favoris.includes(mot.mot) ? '1.5px solid #E8402A' : '1.5px solid #3A3A3A', background: favoris.includes(mot.mot) ? '#2D0A0A' : '#1C1C1C', fontSize: '13px', fontWeight: 500, color: favoris.includes(mot.mot) ? '#FCA5A5' : '#F0F0F0', cursor: 'pointer' }}>
+                ♥ {favoris.includes(mot.mot) ? 'Sauvegardé' : 'Favori'}
+              </button>
+              <button style={{ padding: '10px', borderRadius: '10px', border: '2px solid #F5C842', background: '#F5C842', color: '#111', fontSize: '13px', fontWeight: 500, cursor: 'pointer' }}>
+                ↑ Partager
+              </button>
+            </div>
+
+            <button onClick={() => onMarquerUtilise(mot.mot)} disabled={motsUtilises.includes(mot.mot)}
+              style={{ width: '100%', marginTop: '8px', marginBottom: '4px', padding: '10px', borderRadius: '10px', border: motsUtilises.includes(mot.mot) ? '2px solid #16A34A' : '2px dashed #16A34A', background: motsUtilises.includes(mot.mot) ? '#16A34A' : '#0A1F10', color: motsUtilises.includes(mot.mot) ? '#111' : '#4ADE80', fontSize: '13px', fontWeight: 500, cursor: motsUtilises.includes(mot.mot) ? 'default' : 'pointer' }}>
+              {motsUtilises.includes(mot.mot) ? '✓ Utilisé aujourd\'hui !' : '✓ Je l\'ai utilisé aujourd\'hui !'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 18px 14px', background: '#111', borderTop: '1px solid #222', flexShrink: 0 }}>
+        <button onClick={() => navigate('up')} disabled={index === 0 || animating}
+          style={{ width: '44px', height: '44px', borderRadius: '50%', border: '1.5px solid', borderColor: index === 0 ? '#222' : '#3A3A3A', background: index === 0 ? '#1A1A1A' : '#1C1C1C', color: index === 0 ? '#333' : '#F0F0F0', fontSize: '18px', cursor: index === 0 ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          ↑
+        </button>
+
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ color: '#A0A0A0', fontSize: '11px', marginBottom: '2px' }}>Mot {index + 1} sur {mots.length}</p>
+          <p style={{ color: '#F5C842', fontSize: '12px', fontWeight: 500 }}>{mot.theme}</p>
+        </div>
+
+        <button onClick={() => navigate('down')} disabled={index === mots.length - 1 || animating}
+          style={{ width: '44px', height: '44px', borderRadius: '50%', border: 'none', background: index === mots.length - 1 ? '#1A1A1A' : '#F5C842', color: index === mots.length - 1 ? '#333' : '#111', fontSize: '18px', cursor: index === mots.length - 1 ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          ↓
+        </button>
+      </div>
     </div>
   )
 }
 
 const labelStyle: React.CSSProperties = {
   fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px',
-  color: '#A0A0A0', marginBottom: '8px', marginTop: '16px', fontWeight: 500,
+  color: '#A0A0A0', marginBottom: '7px', marginTop: '14px', fontWeight: 500,
 }
