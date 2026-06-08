@@ -52,7 +52,7 @@ Réponds UNIQUEMENT avec un objet JSON valide, sans texte avant ou après, sans 
         'X-Title': 'Molière App',
       },
       body: JSON.stringify({
-        model: 'google/gemma-3-4b-it:free',
+        model: 'deepseek/deepseek-r1:free',
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.8,
       }),
