@@ -1,5 +1,4 @@
-type Screen = 'accueil' | 'quiz' | 'carnet' | 'historique' | 'profil'
-
+type Screen = 'accueil' | 'quiz' | 'carnet' | 'ia' | 'historique' | 'profil'
 type Props = {
   active: Screen
   onChange: (screen: Screen) => void
