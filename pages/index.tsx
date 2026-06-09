@@ -151,9 +151,13 @@ if (!onboardingVu) return (
               onMotsCharges={onMotsCharges}
             />
           )}
-          {screen === 'quiz' && (
-            <ScreenQuiz mots={motsQuiz.length > 0 ? motsQuiz : MOTS} onQuizComplete={onQuizComplete} />
-          )}
+       {screen === 'quiz' && (
+  <ScreenQuiz mots={motsCharges.length > 0 ? motsCharges.filter(m => m.type !== 'expression').map((m, i) => ({
+    id: i + 1, mot: m.mot, nature: m.nature, theme: m.theme,
+    definition: m.definition, etymologie: m.etymologie,
+    exemples: m.exemples, quiz: m.quiz,
+  })) : MOTS} onQuizComplete={onQuizComplete} />
+)}
           {screen === 'carnet' && <ScreenCarnet />}
           {screen === 'ia' && <ScreenMoliereIA />}
           {screen === 'historique' && (
