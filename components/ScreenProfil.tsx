@@ -128,20 +128,16 @@ const [suggestionEnvoyee, setSuggestionEnvoyee] = useState(false)
                 placeholder="Ex : Schadenfreude — satisfaction éprouvée face au malheur d'autrui..."
                 style={{ width: '100%', background: '#111', border: '1px solid #3A3A3A', borderRadius: '8px', padding: '10px', color: '#F0F0F0', fontSize: '13px', resize: 'none', height: '80px', fontFamily: 'inherit', outline: 'none', marginBottom: '10px' }}
               />
-              <button
-             onClick={async () => {
-onClick={async () => {
-  if (!suggestion.trim()) return
-  try {
-    await supabase.from('suggestions').insert({ mot: suggestion.trim() })
-    setSuggestionEnvoyee(true)
-  } catch (e) {
-    console.error('Erreur:', e)
-    setSuggestionEnvoyee(true)
-  }
-}}
-  }
-}}
+  <button
+  onClick={async () => {
+    if (!suggestion.trim()) return
+    try {
+      await supabase.from('suggestions').insert({ mot: suggestion.trim() })
+      setSuggestionEnvoyee(true)
+    } catch (e) {
+      setSuggestionEnvoyee(true)
+    }
+  }}
                 disabled={!suggestion.trim()}
                 style={{ width: '100%', padding: '11px', borderRadius: '10px', border: 'none', background: suggestion.trim() ? '#F5C842' : '#2A2A2A', color: suggestion.trim() ? '#111' : '#555', fontSize: '14px', fontWeight: 600, cursor: suggestion.trim() ? 'pointer' : 'default' }}>
                 Envoyer ma suggestion
