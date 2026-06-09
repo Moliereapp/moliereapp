@@ -1,4 +1,5 @@
 import ScreenBienvenue from '../components/moliere-bienvenue'
+import ScreenMoliereIA from '../components/moliere-ia'
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import { createClient } from '@supabase/supabase-js'
@@ -17,7 +18,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
-type Screen = 'accueil' | 'quiz' | 'carnet' | 'historique' | 'profil'
+type Screen = 'accueil' | 'quiz' | 'carnet' | 'ia' | 'historique' | 'profil'
 
 type MotIA = {
   mot: string
@@ -147,6 +148,7 @@ export default function Home() {
             <ScreenQuiz mots={motsQuiz.length > 0 ? motsQuiz : MOTS} onQuizComplete={onQuizComplete} />
           )}
           {screen === 'carnet' && <ScreenCarnet />}
+          {screen === 'ia' && <ScreenMoliereIA />}
           {screen === 'historique' && (
             <ScreenHistorique mots={MOTS} favoris={[]} motUtilises={[]} />
           )}
