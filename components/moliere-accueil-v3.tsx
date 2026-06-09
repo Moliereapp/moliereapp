@@ -7,6 +7,7 @@ type MotJour = {
   theme: string
   type?: string
   synonymes?: string[]
+  antonymes?: string[]
   definition: string
   etymologie: string
   exemples: Exemple[]
@@ -164,6 +165,14 @@ export default function ScreenAccueilV2({ favoris, motsUtilises, onToggleFavori,
     <span style={{ fontSize: '11px', color: '#A0A0A0', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '1px', alignSelf: 'center' }}>Synonymes :</span>
     {mot.synonymes.map((s: string, i: number) => (
       <span key={i} style={{ background: '#272727', color: '#C0C0C0', fontSize: '12px', padding: '3px 10px', borderRadius: '20px', border: '1px solid #3A3A3A' }}>{s}</span>
+    ))}
+  </div>
+)}
+{mot.antonymes && mot.antonymes.length > 0 && (
+  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '6px', marginBottom: '4px' }}>
+    <span style={{ fontSize: '11px', color: '#A0A0A0', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '1px', alignSelf: 'center' }}>Antonymes :</span>
+    {mot.antonymes.map((a: string, i: number) => (
+      <span key={i} style={{ background: '#2D0A0A', color: '#FCA5A5', fontSize: '12px', padding: '3px 10px', borderRadius: '20px', border: '1px solid #7F1D1D' }}>{a}</span>
     ))}
   </div>
 )}
