@@ -10,6 +10,7 @@ export default function BottomNav({ active, onChange }: Props) {
     { id: 'accueil', label: 'Accueil', icon: '⌂' },
     { id: 'quiz', label: 'Quiz', icon: '◈' },
     { id: 'carnet', label: 'Carnet', icon: '✎' },
+    { id: 'ia', label: 'Molière IA', icon: '🤖' },
     { id: 'historique', label: 'Mots appris', icon: '☰' },
     { id: 'profil', label: 'Profil', icon: '◉' },
   ]
