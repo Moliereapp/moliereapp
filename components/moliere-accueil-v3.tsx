@@ -59,7 +59,9 @@ const cache = !forceRefresh ? localStorage.getItem(`mots_${today}`) : null
         return
       } catch {}
     }
-    fetch('/api/mots-du-jour')
+const cats = localStorage.getItem('categories_choisies')
+const params = cats ? `?categories=${encodeURIComponent(cats)}` : ''
+fetch(`/api/mots-du-jour${params}`)
       .then(r => r.json())
       .then(data => {
         if (data.error) throw new Error(data.error)
