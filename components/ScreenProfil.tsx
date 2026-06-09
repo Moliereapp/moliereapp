@@ -130,19 +130,16 @@ const [suggestionEnvoyee, setSuggestionEnvoyee] = useState(false)
               />
               <button
              onClick={async () => {
+onClick={async () => {
   if (!suggestion.trim()) return
   try {
-    const { data: sessionData } = await supabase.auth.getSession()
-    const userId = sessionData?.session?.user?.id
-    const { error } = await supabase.from('suggestions').insert({ 
-      mot: suggestion.trim(),
-      user_id: userId || null
-    })
-    if (error) console.error('Erreur supabase:', error)
+    await supabase.from('suggestions').insert({ mot: suggestion.trim() })
     setSuggestionEnvoyee(true)
   } catch (e) {
     console.error('Erreur:', e)
     setSuggestionEnvoyee(true)
+  }
+}}
   }
 }}
                 disabled={!suggestion.trim()}
