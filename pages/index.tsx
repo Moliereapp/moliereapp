@@ -1,3 +1,4 @@
+import ScreenBienvenue from '../components/moliere-bienvenue'
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import { createClient } from '@supabase/supabase-js'
@@ -34,6 +35,7 @@ export default function Home() {
   const [screen, setScreen] = useState<Screen>('accueil')
   const [motsCharges, setMotsCharges] = useState<MotIA[]>([])
   const [user, setUser] = useState<any>(null)
+  const [bienvenueVu, setBienvenueVu] = useLocalStorage<boolean>('bienvenue_vu', false)
   const [authLoading, setAuthLoading] = useState(true)
 
   const [favoris, setFavoris] = useLocalStorage<string[]>('favoris_v2', [])
@@ -91,7 +93,12 @@ export default function Home() {
       <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
     </div>
   )
-
+  if (!bienvenueVu) return (
+  <div style={{ maxWidth: '420px', margin: '0 auto', minHeight: '100vh', background: '#111', display: 'flex', flexDirection: 'column', borderLeft: '1px solid #2A2A2A', borderRight: '1px solid #2A2A2A' }}>
+    <ScreenBienvenue onTermine={() => setBienvenueVu(true)} />
+  </div>
+)
+  
   if (!user) return (
     <div style={{ maxWidth: '420px', margin: '0 auto', minHeight: '100vh', background: '#111', display: 'flex', flexDirection: 'column', borderLeft: '1px solid #2A2A2A', borderRight: '1px solid #2A2A2A' }}>
       <Head>
