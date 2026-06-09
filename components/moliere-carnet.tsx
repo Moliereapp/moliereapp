@@ -174,12 +174,15 @@ export default function ScreenCarnet() {
             if (!motsVusCache.find(c => c.mot === m.mot)) {
               const existant = carnet.find(c => c.mot === m.mot)
               motsVusCache.push(existant || {
-                mot: m.mot,
-                theme: m.theme,
-                definition: m.definition,
-                dateDecouvert: d.toISOString().split('T')[0],
-                utilisations: [],
-              })
+  mot: m.mot,
+  theme: m.theme,
+  definition: m.definition,
+  synonymes: m.synonymes || [],
+  antonymes: m.antonymes || [],
+  citation: m.citation || null,
+  dateDecouvert: d.toISOString().split('T')[0],
+  utilisations: [],
+})
             }
           })
         } catch {}
