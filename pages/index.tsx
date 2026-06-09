@@ -1,4 +1,5 @@
 import ScreenBienvenue from '../components/moliere-bienvenue'
+import ScreenOnboarding from '../components/moliere-onboarding'
 import ScreenMoliereIA from '../components/moliere-ia'
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
@@ -37,6 +38,8 @@ export default function Home() {
   const [motsCharges, setMotsCharges] = useState<MotIA[]>([])
   const [user, setUser] = useState<any>(null)
   const [bienvenueVu, setBienvenueVu] = useLocalStorage<boolean>('bienvenue_vu', false)
+  const [categoriesChoisies, setCategoriesChoisies] = useLocalStorage<string[]>('categories_choisies', [])
+const [onboardingVu, setOnboardingVu] = useLocalStorage<boolean>('onboarding_vu', false)
   const [authLoading, setAuthLoading] = useState(true)
 
   const [favoris, setFavoris] = useLocalStorage<string[]>('favoris_v2', [])
@@ -109,7 +112,11 @@ export default function Home() {
       <ScreenAuth onConnecte={setUser} />
     </div>
   )
-
+if (!onboardingVu) return (
+  <div style={{ maxWidth: '420px', margin: '0 auto', minHeight: '100vh', background: '#111', display: 'flex', flexDirection: 'column', borderLeft: '1px solid #2A2A2A', borderRight: '1px solid #2A2A2A' }}>
+    <ScreenOnboarding onTermine={(cats) => { setCategoriesChoisies(cats); setOnboardingVu(true) }} />
+  </div>
+)
   return (
     <>
       <Head>
