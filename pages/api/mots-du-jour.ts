@@ -154,8 +154,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const debut = new Date('2024-01-01').getTime()
   const joursEcoules = Math.floor((new Date().getTime() - debut) / (1000 * 60 * 60 * 24))
 
-  const catsShuffle = [...TOUTES_CATEGORIES].sort(() => (Math.sin(joursEcoules) * 10000) % 1 - 0.5)
-  const troisCats = catsShuffle.slice(0, 3)
+const categoriesParam = req.query.categories
+const categoriesPreferees = categoriesParam
+  ? JSON.parse(decodeURIComponent(categoriesParam as string))
+  : TOUTES_CATEGORIES
+
+const pool = categoriesPreferees.length >= 3 ? categoriesPreferees : TOUTES_CATEGORIES
+const catsShuffle = [...pool].sort(() => (Math.sin(joursEcoules) * 10000) % 1 - 0.5)
+const troisCats = catsShuffle.slice(0, 3)
 
   const mots = troisCats.map((cat, i) => {
     const motsCategorie = BANQUE_MOTS.filter(m => m.theme === cat && m.type === 'mot')
