@@ -8,6 +8,7 @@ type MotJour = {
   type?: string
   synonymes?: string[]
   antonymes?: string[]
+  citation?: { texte: string; auteur: string } | null
   definition: string
   etymologie: string
   exemples: Exemple[]
@@ -175,6 +176,12 @@ const cache = !forceRefresh ? localStorage.getItem(`mots_${today}`) : null
     {mot.antonymes.map((a: string, i: number) => (
       <span key={i} style={{ background: '#2D0A0A', color: '#FCA5A5', fontSize: '12px', padding: '3px 10px', borderRadius: '20px', border: '1px solid #7F1D1D' }}>{a}</span>
     ))}
+  </div>
+)}
+            {mot.citation && (
+  <div style={{ background: '#1A1200', borderRadius: '10px', padding: '12px 14px', marginTop: '6px', marginBottom: '4px', borderLeft: '3px solid #F5C842' }}>
+    <p style={{ fontSize: '13px', color: '#F0F0F0', fontStyle: 'italic', lineHeight: 1.5 }}>« {mot.citation.texte} »</p>
+    <p style={{ fontSize: '11px', color: '#CA8A04', marginTop: '5px', fontWeight: 500 }}>— {mot.citation.auteur}</p>
   </div>
 )}
             <p style={labelStyle}>Exemples</p>
