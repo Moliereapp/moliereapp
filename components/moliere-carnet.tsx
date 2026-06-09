@@ -12,6 +12,9 @@ type MotCarnet = {
   definition: string
   dateDecouvert: string
   utilisations: Utilisation[]
+  synonymes?: string[]
+  antonymes?: string[]
+  citation?: { texte: string; auteur: string } | null
 }
 
 const COULEURS_THEME: Record<string, string> = {
@@ -81,7 +84,28 @@ function CarteMotCarnet({ mot, onAjouterUtilisation }: {
           <p style={{ fontSize: '13px', color: '#C0C0C0', lineHeight: 1.5, marginBottom: '12px', fontStyle: 'italic', borderLeft: `3px solid ${couleur}`, paddingLeft: '10px' }}>
             {mot.definition}
           </p>
-
+{mot.synonymes && mot.synonymes.length > 0 && (
+  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '10px' }}>
+    <span style={{ fontSize: '11px', color: '#A0A0A0', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '1px', alignSelf: 'center' }}>Synonymes :</span>
+    {mot.synonymes.map((s, i) => (
+      <span key={i} style={{ background: '#272727', color: '#C0C0C0', fontSize: '12px', padding: '3px 10px', borderRadius: '20px', border: '1px solid #3A3A3A' }}>{s}</span>
+    ))}
+  </div>
+)}
+{mot.antonymes && mot.antonymes.length > 0 && (
+  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '6px' }}>
+    <span style={{ fontSize: '11px', color: '#A0A0A0', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '1px', alignSelf: 'center' }}>Antonymes :</span>
+    {mot.antonymes.map((a, i) => (
+      <span key={i} style={{ background: '#2D0A0A', color: '#FCA5A5', fontSize: '12px', padding: '3px 10px', borderRadius: '20px', border: '1px solid #7F1D1D' }}>{a}</span>
+    ))}
+  </div>
+)}
+{mot.citation && (
+  <div style={{ background: '#1A1200', borderRadius: '10px', padding: '10px 12px', marginTop: '8px', borderLeft: '3px solid #F5C842' }}>
+    <p style={{ fontSize: '12px', color: '#F0F0F0', fontStyle: 'italic', lineHeight: 1.5 }}>« {mot.citation.texte} »</p>
+    <p style={{ fontSize: '11px', color: '#CA8A04', marginTop: '4px', fontWeight: 500 }}>— {mot.citation.auteur}</p>
+  </div>
+)}
           {/* Historique utilisations */}
           {mot.utilisations.length > 0 && (
             <div style={{ marginBottom: '12px' }}>
