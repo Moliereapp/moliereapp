@@ -129,11 +129,21 @@ const [suggestionEnvoyee, setSuggestionEnvoyee] = useState(false)
                 style={{ width: '100%', background: '#111', border: '1px solid #3A3A3A', borderRadius: '8px', padding: '10px', color: '#F0F0F0', fontSize: '13px', resize: 'none', height: '80px', fontFamily: 'inherit', outline: 'none', marginBottom: '10px' }}
               />
               <button
-                onClick={async () => {
+             onClick={async () => {
   if (!suggestion.trim()) return
-  const { data: { user } } = await supabase.auth.getUser()
-  await supabase.from('suggestions').insert({ mot: suggestion.trim(), user_id: user?.id })
-  setSuggestionEnvoyee(true)
+  try {
+    const { data: sessionData } = await supabase.auth.getSession()
+    const userId = sessionData?.session?.user?.id
+    const { error } = await supabase.from('suggestions').insert({ 
+      mot: suggestion.trim(),
+      user_id: userId || null
+    })
+    if (error) console.error('Erreur supabase:', error)
+    setSuggestionEnvoyee(true)
+  } catch (e) {
+    console.error('Erreur:', e)
+    setSuggestionEnvoyee(true)
+  }
 }}
                 disabled={!suggestion.trim()}
                 style={{ width: '100%', padding: '11px', borderRadius: '10px', border: 'none', background: suggestion.trim() ? '#F5C842' : '#2A2A2A', color: suggestion.trim() ? '#111' : '#555', fontSize: '14px', fontWeight: 600, cursor: suggestion.trim() ? 'pointer' : 'default' }}>
