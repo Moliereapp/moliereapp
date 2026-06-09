@@ -47,7 +47,8 @@ export default function ScreenAccueilV2({ favoris, motsUtilises, onToggleFavori,
 
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0]
-    const cache = localStorage.getItem(`mots_${today}`)
+   const forceRefresh = window.location.search.includes('refresh=1')
+const cache = !forceRefresh ? localStorage.getItem(`mots_${today}`) : null
     if (cache) {
       try {
         const cached = JSON.parse(cache)
