@@ -160,9 +160,7 @@ if (!onboardingVu) return (
 )}
           {screen === 'carnet' && <ScreenCarnet />}
           {screen === 'ia' && <ScreenMoliereIA />}
-          {screen === 'historique' && (
-            <ScreenHistorique mots={MOTS} favoris={[]} motUtilises={[]} />
-          )}
+          {screen === 'historique' && <ScreenHistorique />}
           {screen === 'profil' && (
             <ScreenProfil streak={streak} motsVus={motsVusCount} quizCompletes={quizCompletes} scoreTotal={scoreTotal} motUtilises={motUtilises.length} />
           )}
