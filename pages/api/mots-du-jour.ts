@@ -90,11 +90,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const idx = (joursEcoules + i * 7) % motsCategorie.length
     return { ...motsCategorie[idx], date: today }
   })
-  if (joursEcoules % 2 === 0) {
-    const expressions = BANQUE_MOTS.filter(m => m.type === 'expression')
-    const expr = expressions[joursEcoules % expressions.length]
-    mots[2] = { ...expr, date: today }
-  }
+const expressions = BANQUE_MOTS.filter(m => m.type === 'expression')
+const expr = expressions[joursEcoules % expressions.length]
+mots[2] = { ...expr, date: today }
 
   return res.status(200).json(mots)
 }
