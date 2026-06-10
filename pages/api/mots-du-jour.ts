@@ -161,9 +161,11 @@ const categoriesPreferees = categoriesParam
 
 const niveauParam = (req.query.niveau as string || 'intermediaire').replace(/"/g, '')
 
-const MOTS_NOVICE = ['Éphémère', 'Résilience', 'Paradigme', 'Stoïcisme', 'Ostracisme', 'Galéjade', 'Laconique', 'Aphorisme', 'Velléitaire', 'Logorrhée', 'Circonspect', 'Nonchalance', 'Frugalité', 'Endurance', 'Palmarès']
-const MOTS_INTERMEDIAIRE = ['Catharsis', 'Sérendipité', 'Hégémonie', 'Tergiverser', 'Sophisme', 'Nihilisme', 'Iconoclaste', 'Démagogie', 'Plébiscite', 'Synesthésie', 'Acrimonie', 'Dialectique', 'Sagacité', 'Prévarication', 'Jactance', 'Véhémence', 'Truculent', 'Panégyrique', 'Quiproquo', 'Éloquence', 'Hypocrisie', 'Obséquieux', 'Flegme', 'Kyrielle']
-const MOTS_EXPERT = ['Palimpseste', 'Syncrétisme', 'Casuistique', 'Ratiociner', 'Acédie', 'Bathos', 'Gnose', 'Immanent', 'Sycophante', 'Heuristique', 'Uxoricité', 'Sibyllin', 'Outrecuidance', 'Abscons', 'Kafkaïen']
+const MOTS_NOVICE = ['Éphémère', 'Résilience', 'Paradigme', 'Stoïcisme', 'Ostracisme', 'Galéjade', 'Laconique', 'Aphorisme', 'Velléitaire', 'Logorrhée', 'Circonspect', 'Nonchalance', 'Frugalité', 'Endurance', 'Palmarès', 'Démagogie', 'Plébiscite', 'Quiproquo', 'Anachronisme', 'Hypocrisie', 'Capricieux', 'Dédaigneux', 'Épopée', 'Faconde', 'Mirobolant', 'Novice', 'Vivace', 'Bilieux', 'Méandre', 'Frondaison', 'Sylvestre', 'Umami', 'Millésime', 'Hégémonie', 'Atavisme', 'Délétère', 'Sérendipité']
+
+const MOTS_INTERMEDIAIRE = ['Catharsis', 'Tergiverser', 'Sophisme', 'Nihilisme', 'Iconoclaste', 'Synesthésie', 'Acrimonie', 'Dialectique', 'Sagacité', 'Prévarication', 'Jactance', 'Véhémence', 'Truculent', 'Panégyrique', 'Éloquence', 'Obséquieux', 'Flegme', 'Kyrielle', 'Prosélytisme', 'Syncrétisme', 'Pérorer', 'Heuristique', 'Axiome', 'Omniscient', 'Pléonasme', 'Inéluctable', 'Ubiquité', 'Apocryphe', 'Éphèbe', 'Gabegie', 'Hâblerie', 'Iconographie', 'Jocrisse', 'Kafkaïen', 'Litote', 'Rébarbatif', 'Témérité', 'Vénalité', 'Wagnérien', 'Xénophile', 'Estivage', 'Fricassée', 'Pérennité', 'Quinteux']
+
+const MOTS_EXPERT = ['Palimpseste', 'Casuistique', 'Ratiociner', 'Acédie', 'Bathos', 'Gnose', 'Immanent', 'Sycophante', 'Uxoricité', 'Sibyllin', 'Outrecuidance', 'Abscons', 'Épistémologie', 'Syncrétisme', 'Circumlocution', 'Lénifier', 'Moratoire', 'Déférence', 'Zélateur', 'Quintessence', 'Atavisme', 'Velléité', 'Acrimonie', 'Mnémotechnique', 'Néologisme']
 
 const pool = categoriesPreferees.length >= 3 ? categoriesPreferees : TOUTES_CATEGORIES
 const catsShuffle = [...pool].sort(() => (Math.sin(joursEcoules) * 10000) % 1 - 0.5)
