@@ -49,7 +49,17 @@ const [suggestionEnvoyee, setSuggestionEnvoyee] = useState(false)
     { nom: 'Compléter 3 quiz', actuel: Math.min(quizCompletes, 3), total: 3, couleur: '#2563EB' },
     { nom: 'Utiliser 2 mots', actuel: Math.min(motUtilises, 2), total: 2, couleur: '#16A34A' },
   ]
-
+<div style={{ padding: '0 18px 16px' }}>
+  <button onClick={async () => {
+    const { createClient } = await import('@supabase/supabase-js')
+    const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+    await supabase.auth.signOut()
+    localStorage.clear()
+    window.location.reload()
+  }} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #3A3A3A', background: '#1C1C1C', color: '#FCA5A5', fontSize: '14px', cursor: 'pointer' }}>
+    Se déconnecter
+  </button>
+</div>
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflowY: 'auto', background: '#111' }}>
       <div style={{ background: '#F5C842', padding: '20px 18px 24px', textAlign: 'center', borderBottom: '2px solid #333' }}>
