@@ -155,9 +155,20 @@ const [suggestionEnvoyee, setSuggestionEnvoyee] = useState(false)
             </div>
           )}
         </div>
+      </div>
+        <div style={{ padding: '0 18px 32px' }}>
+          <button onClick={async () => {
+            await supabase.auth.signOut()
+            localStorage.clear()
+            window.location.reload()
+          }} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #3A3A3A', background: '#1C1C1C', color: '#FCA5A5', fontSize: '14px', cursor: 'pointer' }}>
+            Se déconnecter
+          </button>
+        </div>
     </div>
   )
 }
+
 
 const labelStyle: React.CSSProperties = {
   fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px',
