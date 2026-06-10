@@ -159,12 +159,28 @@ const categoriesPreferees = categoriesParam
   ? JSON.parse(decodeURIComponent(categoriesParam as string))
   : TOUTES_CATEGORIES
 
+const niveauParam = (req.query.niveau as string || 'intermediaire').replace(/"/g, '')
+
+const MOTS_NOVICE = ['Éphémère', 'Résilience', 'Paradigme', 'Stoïcisme', 'Ostracisme', 'Galéjade', 'Laconique', 'Aphorisme', 'Velléitaire', 'Logorrhée', 'Circonspect', 'Nonchalance', 'Frugalité', 'Endurance', 'Palmarès']
+const MOTS_INTERMEDIAIRE = ['Catharsis', 'Sérendipité', 'Hégémonie', 'Tergiverser', 'Sophisme', 'Nihilisme', 'Iconoclaste', 'Démagogie', 'Plébiscite', 'Synesthésie', 'Acrimonie', 'Dialectique', 'Sagacité', 'Prévarication', 'Jactance', 'Véhémence', 'Truculent', 'Panégyrique', 'Quiproquo', 'Éloquence', 'Hypocrisie', 'Obséquieux', 'Flegme', 'Kyrielle']
+const MOTS_EXPERT = ['Palimpseste', 'Syncrétisme', 'Casuistique', 'Ratiociner', 'Acédie', 'Bathos', 'Gnose', 'Immanent', 'Sycophante', 'Heuristique', 'Uxoricité', 'Sibyllin', 'Outrecuidance', 'Abscons', 'Kafkaïen']
+
 const pool = categoriesPreferees.length >= 3 ? categoriesPreferees : TOUTES_CATEGORIES
 const catsShuffle = [...pool].sort(() => (Math.sin(joursEcoules) * 10000) % 1 - 0.5)
 const troisCats = catsShuffle.slice(0, 3)
 
-  const mots = troisCats.map((cat, i) => {
-    const motsCategorie = BANQUE_MOTS.filter(m => m.theme === cat && m.type === 'mot')
+ const mots = troisCats.map((cat, i) => {
+  let motsCategorie = BANQUE_MOTS.filter(m => m.theme === cat && m.type === 'mot')
+  if (niveauParam === 'novice') {
+    const filtres = motsCategorie.filter(m => MOTS_NOVICE.includes(m.mot))
+    if (filtres.length > 0) motsCategorie = filtres
+  } else if (niveauParam === 'intermediaire') {
+    const filtres = motsCategorie.filter(m => MOTS_INTERMEDIAIRE.includes(m.mot))
+    if (filtres.length > 0) motsCategorie = filtres
+  } else if (niveauParam === 'expert') {
+    const filtres = motsCategorie.filter(m => MOTS_EXPERT.includes(m.mot))
+    if (filtres.length > 0) motsCategorie = filtres
+  }
     if (motsCategorie.length === 0) return { ...BANQUE_MOTS[i % BANQUE_MOTS.length], date: today }
     const idx = (joursEcoules + i * 7) % motsCategorie.length
     return { ...motsCategorie[idx], date: today }
