@@ -60,8 +60,11 @@ const cache = !forceRefresh ? localStorage.getItem(`mots_${today}`) : null
       } catch {}
     }
 const cats = localStorage.getItem('categories_choisies')
-const params = cats ? `?categories=${encodeURIComponent(cats)}` : ''
-fetch(`/api/mots-du-jour${params}`)
+const niveau = (localStorage.getItem('niveau_choisi') || 'intermediaire').replace(/"/g, '')
+const params = new URLSearchParams()
+if (cats) params.set('categories', cats)
+params.set('niveau', niveau)
+fetch(`/api/mots-du-jour?${params.toString()}`)
       .then(r => r.json())
       .then(data => {
         if (data.error) throw new Error(data.error)
