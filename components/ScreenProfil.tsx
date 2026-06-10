@@ -5,6 +5,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
+
 type Props = {
   streak: number
   motsVus: number
@@ -14,9 +15,9 @@ type Props = {
 }
 
 const NIVEAUX = [
-  { nom: 'Novice',     min: 0   },
-  { nom: 'Lettré',     min: 10  },
-  { nom: 'Érudit',     min: 25  },
+  { nom: 'Novice', min: 0 },
+  { nom: 'Lettré', min: 10 },
+  { nom: 'Érudit', min: 25 },
   { nom: 'Académicien', min: 50 },
 ]
 
@@ -33,6 +34,8 @@ export default function ScreenProfil({ streak, motsVus, quizCompletes, scoreTota
   const prochain = getProchainNiveau(motsVus)
   const xpPct = prochain ? Math.round((motsVus - getNiveau(motsVus).min) / (prochain.min - getNiveau(motsVus).min) * 100) : 100
   const tauxReussite = quizCompletes > 0 ? Math.round((scoreTotal / (quizCompletes * 4)) * 100) : 0
+  const [suggestion, setSuggestion] = useState('')
+  const [suggestionEnvoyee, setSuggestionEnvoyee] = useState(false)
 
   const badges = [
     { nom: 'Premier pas', desc: '1er mot découvert', icon: '★', gagne: motsVus >= 1 },
@@ -42,13 +45,13 @@ export default function ScreenProfil({ streak, motsVus, quizCompletes, scoreTota
     { nom: '30 jours', desc: 'Série de 30 jours', icon: '◉', gagne: streak >= 30 },
     { nom: 'Académicien', desc: '50 mots appris', icon: '⚜', gagne: motsVus >= 50 },
   ]
-const [suggestion, setSuggestion] = useState('')
-const [suggestionEnvoyee, setSuggestionEnvoyee] = useState(false)
+
   const objectifs = [
     { nom: 'Lire 5 mots du jour', actuel: Math.min(motsVus, 5), total: 5, couleur: '#F5C842' },
     { nom: 'Compléter 3 quiz', actuel: Math.min(quizCompletes, 3), total: 3, couleur: '#2563EB' },
     { nom: 'Utiliser 2 mots', actuel: Math.min(motUtilises, 2), total: 2, couleur: '#16A34A' },
   ]
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflowY: 'auto', background: '#111' }}>
       <div style={{ background: '#F5C842', padding: '20px 18px 24px', textAlign: 'center', borderBottom: '2px solid #333' }}>
@@ -62,17 +65,6 @@ const [suggestionEnvoyee, setSuggestionEnvoyee] = useState(false)
             <p style={{ fontSize: '11px', color: '#111', opacity: .7, marginBottom: '4px' }}>{motsVus} / {prochain.min} mots vers {prochain.nom}</p>
             <div style={{ height: '6px', background: 'rgba(0,0,0,.2)', borderRadius: '10px', overflow: 'hidden' }}>
               <div style={{ height: '100%', background: '#111', borderRadius: '10px', width: `${xpPct}%` }} />
-              <div style={{ padding: '0 18px 16px' }}>
-  <button onClick={async () => {
-    const { createClient } = await import('@supabase/supabase-js')
-    const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
-    await supabase.auth.signOut()
-    localStorage.clear()
-    window.location.reload()
-  }} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #3A3A3A', background: '#1C1C1C', color: '#FCA5A5', fontSize: '14px', cursor: 'pointer' }}>
-    Se déconnecter
-  </button>
-</div>
             </div>
           </div>
         )}
@@ -119,56 +111,56 @@ const [suggestionEnvoyee, setSuggestionEnvoyee] = useState(false)
           ))}
         </div>
       </div>
-   {/* Section Suggestions */}
-        <div style={{ padding: '0 18px 32px' }}>
-          <p style={labelStyle}>Suggérer un mot</p>
-          {suggestionEnvoyee ? (
-            <div style={{ background: '#0A1F10', borderRadius: '12px', padding: '16px', border: '1px solid #16A34A', textAlign: 'center' }}>
-              <p style={{ fontSize: '20px', marginBottom: '8px' }}>✓</p>
-              <p style={{ fontSize: '14px', color: '#4ADE80', fontWeight: 500 }}>Suggestion envoyée !</p>
-              <p style={{ fontSize: '12px', color: '#A0A0A0', marginTop: '4px' }}>Merci pour ta contribution.</p>
-              <button onClick={() => { setSuggestion(''); setSuggestionEnvoyee(false) }} style={{ marginTop: '12px', background: 'none', border: 'none', color: '#A0A0A0', fontSize: '12px', cursor: 'pointer', textDecoration: 'underline' }}>Suggérer un autre mot</button>
-            </div>
-          ) : (
-            <div style={{ background: '#1C1C1C', borderRadius: '12px', padding: '16px', border: '1px solid #2A2A2A' }}>
-              <p style={{ fontSize: '13px', color: '#A0A0A0', marginBottom: '12px', lineHeight: 1.5 }}>Tu connais un mot rare ou une expression que tu aimerais voir dans l'app ?</p>
-              <textarea
-                value={suggestion}
-                onChange={e => setSuggestion(e.target.value)}
-                placeholder="Ex : Schadenfreude — satisfaction éprouvée face au malheur d'autrui..."
-                style={{ width: '100%', background: '#111', border: '1px solid #3A3A3A', borderRadius: '8px', padding: '10px', color: '#F0F0F0', fontSize: '13px', resize: 'none', height: '80px', fontFamily: 'inherit', outline: 'none', marginBottom: '10px' }}
-              />
-  <button
-  onClick={async () => {
-    if (!suggestion.trim()) return
-    try {
-      await supabase.from('suggestions').insert({ mot: suggestion.trim() })
-      setSuggestionEnvoyee(true)
-    } catch (e) {
-      setSuggestionEnvoyee(true)
-    }
-  }}
-                disabled={!suggestion.trim()}
-                style={{ width: '100%', padding: '11px', borderRadius: '10px', border: 'none', background: suggestion.trim() ? '#F5C842' : '#2A2A2A', color: suggestion.trim() ? '#111' : '#555', fontSize: '14px', fontWeight: 600, cursor: suggestion.trim() ? 'pointer' : 'default' }}>
-                Envoyer ma suggestion
-              </button>
-            </div>
-          )}
-        </div>
+
+      <div style={{ padding: '0 18px 32px' }}>
+        <p style={labelStyle}>Suggérer un mot</p>
+        {suggestionEnvoyee ? (
+          <div style={{ background: '#0A1F10', borderRadius: '12px', padding: '16px', border: '1px solid #16A34A', textAlign: 'center' }}>
+            <p style={{ fontSize: '20px', marginBottom: '8px' }}>✓</p>
+            <p style={{ fontSize: '14px', color: '#4ADE80', fontWeight: 500 }}>Suggestion envoyée !</p>
+            <p style={{ fontSize: '12px', color: '#A0A0A0', marginTop: '4px' }}>Merci pour ta contribution.</p>
+            <button onClick={() => { setSuggestion(''); setSuggestionEnvoyee(false) }} style={{ marginTop: '12px', background: 'none', border: 'none', color: '#A0A0A0', fontSize: '12px', cursor: 'pointer', textDecoration: 'underline' }}>Suggérer un autre mot</button>
+          </div>
+        ) : (
+          <div style={{ background: '#1C1C1C', borderRadius: '12px', padding: '16px', border: '1px solid #2A2A2A' }}>
+            <p style={{ fontSize: '13px', color: '#A0A0A0', marginBottom: '12px', lineHeight: 1.5 }}>Tu connais un mot rare ou une expression que tu aimerais voir dans l'app ?</p>
+            <textarea
+              value={suggestion}
+              onChange={e => setSuggestion(e.target.value)}
+              placeholder="Ex : Schadenfreude — satisfaction éprouvée face au malheur d'autrui..."
+              style={{ width: '100%', background: '#111', border: '1px solid #3A3A3A', borderRadius: '8px', padding: '10px', color: '#F0F0F0', fontSize: '13px', resize: 'none', height: '80px', fontFamily: 'inherit', outline: 'none', marginBottom: '10px' }}
+            />
+            <button
+              onClick={async () => {
+                if (!suggestion.trim()) return
+                try {
+                  await supabase.from('suggestions').insert({ mot: suggestion.trim() })
+                  setSuggestionEnvoyee(true)
+                } catch (e) {
+                  setSuggestionEnvoyee(true)
+                }
+              }}
+              disabled={!suggestion.trim()}
+              style={{ width: '100%', padding: '11px', borderRadius: '10px', border: 'none', background: suggestion.trim() ? '#F5C842' : '#2A2A2A', color: suggestion.trim() ? '#111' : '#555', fontSize: '14px', fontWeight: 600, cursor: suggestion.trim() ? 'pointer' : 'default' }}>
+              Envoyer ma suggestion
+            </button>
+          </div>
+        )}
       </div>
-        <div style={{ padding: '0 18px 32px' }}>
-          <button onClick={async () => {
-            await supabase.auth.signOut()
-            localStorage.clear()
-            window.location.reload()
-          }} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #3A3A3A', background: '#1C1C1C', color: '#FCA5A5', fontSize: '14px', cursor: 'pointer' }}>
-            Se déconnecter
-          </button>
-        </div>
+
+      <div style={{ padding: '0 18px 32px' }}>
+        <button onClick={async () => {
+          await supabase.auth.signOut()
+          localStorage.clear()
+          window.location.reload()
+        }} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #3A3A3A', background: '#1C1C1C', color: '#FCA5A5', fontSize: '14px', cursor: 'pointer' }}>
+          Se déconnecter
+        </button>
+      </div>
+
     </div>
   )
 }
-
 
 const labelStyle: React.CSSProperties = {
   fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px',
