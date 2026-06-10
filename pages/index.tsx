@@ -39,6 +39,7 @@ export default function Home() {
   const [user, setUser] = useState<any>(null)
   const [bienvenueVu, setBienvenueVu] = useLocalStorage<boolean>('bienvenue_vu', false)
   const [categoriesChoisies, setCategoriesChoisies] = useLocalStorage<string[]>('categories_choisies', [])
+const [niveauChoisi, setNiveauChoisi] = useLocalStorage<string>('niveau_choisi', 'intermediaire')
 const [onboardingVu, setOnboardingVu] = useLocalStorage<boolean>('onboarding_vu', false)
   const [authLoading, setAuthLoading] = useState(true)
 
@@ -114,7 +115,7 @@ const [onboardingVu, setOnboardingVu] = useLocalStorage<boolean>('onboarding_vu'
   )
 if (!onboardingVu) return (
   <div style={{ maxWidth: '420px', margin: '0 auto', minHeight: '100vh', background: '#111', display: 'flex', flexDirection: 'column', borderLeft: '1px solid #2A2A2A', borderRight: '1px solid #2A2A2A' }}>
-    <ScreenOnboarding onTermine={(cats) => { setCategoriesChoisies(cats); setOnboardingVu(true) }} />
+    <ScreenOnboarding onTermine={(cats, niveau) => { setCategoriesChoisies(cats); setNiveauChoisi(niveau); setOnboardingVu(true) }} />
   </div>
 )
   return (
