@@ -14,7 +14,26 @@ type Props = {
   motUtilises: number
 }
 
-const NIVEAUX = [
+const NIVEAUX_PROFIL = [
+  { id: 'novice', label: 'Novice', emoji: '🌱', description: 'Mots courants et accessibles.' },
+  { id: 'intermediaire', label: 'Intermédiaire', emoji: '📚', description: 'Pour enrichir son vocabulaire.' },
+  { id: 'expert', label: 'Expert', emoji: '🏆', description: 'Mots rares et recherchés.' },
+]
+
+const CATEGORIES_PROFIL = [
+  { id: 'Littérature', emoji: '📖' },
+  { id: 'Philosophie', emoji: '🧠' },
+  { id: 'Sciences', emoji: '🔬' },
+  { id: 'Histoire', emoji: '🏛️' },
+  { id: 'Vie quotidienne', emoji: '☀️' },
+  { id: 'Art', emoji: '🎨' },
+  { id: 'Gastronomie', emoji: '🍷' },
+  { id: 'Nature', emoji: '🌿' },
+  { id: 'Politique', emoji: '⚖️' },
+  { id: 'Sport', emoji: '🏆' },
+]
+
+const NIVEAUX_XP = [
   { nom: 'Novice', min: 0 },
   { nom: 'Lettré', min: 10 },
   { nom: 'Érudit', min: 25 },
@@ -22,11 +41,25 @@ const NIVEAUX = [
 ]
 
 function getNiveau(mots: number) {
-  return [...NIVEAUX].reverse().find(n => mots >= n.min) ?? NIVEAUX[0]
+  return [...NIVEAUX_XP].reverse().find(n => mots >= n.min) ?? NIVEAUX_XP[0]
 }
 
 function getProchainNiveau(mots: number) {
-  return NIVEAUX.find(n => n.min > mots)
+  return NIVEAUX_XP.find(n => n.min > mots)
+}
+
+function getSavedCategories(): string[] {
+  try {
+    const raw = localStorage.getItem('categories_choisies')
+    if (!raw) return []
+    return JSON.parse(raw)
+  } catch { return [] }
+}
+
+function getSavedNiveau(): string {
+  try {
+    return (localStorage.getItem('niveau_choisi') || 'intermediaire').replace(/"/g, '')
+  } catch { return 'intermediaire' }
 }
 
 export default function ScreenProfil({ streak, motsVus, quizCompletes, scoreTotal, motUtilises }: Props) {
@@ -34,8 +67,28 @@ export default function ScreenProfil({ streak, motsVus, quizCompletes, scoreTota
   const prochain = getProchainNiveau(motsVus)
   const xpPct = prochain ? Math.round((motsVus - getNiveau(motsVus).min) / (prochain.min - getNiveau(motsVus).min) * 100) : 100
   const tauxReussite = quizCompletes > 0 ? Math.round((scoreTotal / (quizCompletes * 4)) * 100) : 0
+
   const [suggestion, setSuggestion] = useState('')
   const [suggestionEnvoyee, setSuggestionEnvoyee] = useState(false)
+  const [parametresOuverts, setParametresOuverts] = useState(false)
+  const [categoriesEdit, setCategoriesEdit] = useState<string[]>(getSavedCategories)
+  const [niveauEdit, setNiveauEdit] = useState<string>(getSavedNiveau)
+  const [sauvegardé, setSauvegardé] = useState(false)
+
+  function toggleCategorie(id: string) {
+    setCategoriesEdit(prev => prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id])
+  }
+
+  function sauvegarderParametres() {
+    const cats = categoriesEdit.length > 0 ? categoriesEdit : CATEGORIES_PROFIL.map(c => c.id)
+    localStorage.setItem('categories_choisies', JSON.stringify(cats))
+    localStorage.setItem('niveau_choisi', niveauEdit)
+    // Vider le cache des mots du jour pour que les nouveaux paramètres s'appliquent demain
+    const today = new Date().toISOString().split('T')[0]
+    localStorage.removeItem(`mots_${today}`)
+    setSauvegardé(true)
+    setTimeout(() => { setSauvegardé(false); setParametresOuverts(false) }, 1500)
+  }
 
   const badges = [
     { nom: 'Premier pas', desc: '1er mot découvert', icon: '★', gagne: motsVus >= 1 },
@@ -54,9 +107,11 @@ export default function ScreenProfil({ streak, motsVus, quizCompletes, scoreTota
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflowY: 'auto', background: '#111' }}>
+
+      {/* Header */}
       <div style={{ background: '#F5C842', padding: '20px 18px 24px', textAlign: 'center', borderBottom: '2px solid #333' }}>
-        <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#111', margin: '0 auto 10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: '26px', color: '#F5C842' }}>M</div>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', color: '#111' }}>Mathis</h2>
+        <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#111', margin: '0 auto 10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Georgia, serif', fontSize: '26px', color: '#F5C842' }}>M</div>
+        <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '20px', color: '#111' }}>Mathis</h2>
         <span style={{ display: 'inline-block', background: '#111', color: '#F5C842', fontSize: '12px', fontWeight: 500, padding: '3px 12px', borderRadius: '20px', marginTop: '6px' }}>
           {niveau.nom}
         </span>
@@ -70,6 +125,7 @@ export default function ScreenProfil({ streak, motsVus, quizCompletes, scoreTota
         )}
       </div>
 
+      {/* Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '10px', padding: '16px 18px' }}>
         {[
           { val: motsVus, lbl: 'Mots appris' },
@@ -78,12 +134,13 @@ export default function ScreenProfil({ streak, motsVus, quizCompletes, scoreTota
           { val: motUtilises, lbl: 'Mots utilisés' },
         ].map((s, i) => (
           <div key={i} style={{ background: '#1C1C1C', borderRadius: '12px', padding: '14px', textAlign: 'center', border: '1px solid #3A3A3A' }}>
-            <p style={{ fontFamily: 'var(--font-display)', fontSize: '28px', color: '#F5C842' }}>{s.val}</p>
+            <p style={{ fontFamily: 'Georgia, serif', fontSize: '28px', color: '#F5C842' }}>{s.val}</p>
             <p style={{ fontSize: '12px', color: '#A0A0A0', marginTop: '3px', fontWeight: 500 }}>{s.lbl}</p>
           </div>
         ))}
       </div>
 
+      {/* Objectifs */}
       <div style={{ padding: '0 18px 16px' }}>
         <p style={labelStyle}>Objectifs de la semaine</p>
         {objectifs.map((o, i) => (
@@ -99,6 +156,7 @@ export default function ScreenProfil({ streak, motsVus, quizCompletes, scoreTota
         ))}
       </div>
 
+      {/* Badges */}
       <div style={{ padding: '0 18px 24px' }}>
         <p style={labelStyle}>Badges</p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '8px' }}>
@@ -112,6 +170,77 @@ export default function ScreenProfil({ streak, motsVus, quizCompletes, scoreTota
         </div>
       </div>
 
+      {/* ===== PARAMÈTRES ===== */}
+      <div style={{ padding: '0 18px 24px' }}>
+        <button
+          onClick={() => { setParametresOuverts(!parametresOuverts); setCategoriesEdit(getSavedCategories()); setNiveauEdit(getSavedNiveau()) }}
+          style={{ width: '100%', padding: '13px 16px', borderRadius: '12px', border: '1px solid #3A3A3A', background: '#1C1C1C', color: '#F0F0F0', fontSize: '14px', fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span>⚙️ Mes paramètres</span>
+          <span style={{ color: '#A0A0A0', fontSize: '18px' }}>{parametresOuverts ? '↑' : '↓'}</span>
+        </button>
+
+        {parametresOuverts && (
+          <div style={{ background: '#1C1C1C', borderRadius: '0 0 12px 12px', border: '1px solid #3A3A3A', borderTop: 'none', padding: '16px' }}>
+
+            {/* Niveau */}
+            <p style={labelStyle}>Niveau de difficulté</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
+              {NIVEAUX_PROFIL.map(n => (
+                <button key={n.id} onClick={() => setNiveauEdit(n.id)}
+                  style={{ padding: '12px 14px', borderRadius: '10px', border: niveauEdit === n.id ? '2px solid #F5C842' : '2px solid #2A2A2A', background: niveauEdit === n.id ? '#1A1500' : '#111', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span style={{ fontSize: '22px' }}>{n.emoji}</span>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ fontSize: '14px', fontWeight: 600, color: niveauEdit === n.id ? '#F5C842' : '#F0F0F0', margin: 0 }}>{n.label}</p>
+                    <p style={{ fontSize: '12px', color: '#A0A0A0', margin: 0 }}>{n.description}</p>
+                  </div>
+                  {niveauEdit === n.id && (
+                    <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#F5C842', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', color: '#111', fontWeight: 700 }}>✓</span>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* Catégories */}
+            <p style={labelStyle}>
+              Catégories
+              <span style={{ color: '#A0A0A0', fontWeight: 400, marginLeft: '8px', textTransform: 'none', letterSpacing: 0 }}>
+                {categoriesEdit.length === 0 ? '(toutes)' : `${categoriesEdit.length} sélectionnée${categoriesEdit.length > 1 ? 's' : ''}`}
+              </span>
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '16px' }}>
+              {CATEGORIES_PROFIL.map(cat => {
+                const sel = categoriesEdit.includes(cat.id)
+                return (
+                  <button key={cat.id} onClick={() => toggleCategorie(cat.id)}
+                    style={{ padding: '10px 12px', borderRadius: '10px', border: sel ? '2px solid #F5C842' : '2px solid #2A2A2A', background: sel ? '#1A1500' : '#111', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '18px' }}>{cat.emoji}</span>
+                    <span style={{ fontSize: '12px', fontWeight: 500, color: sel ? '#F5C842' : '#A0A0A0' }}>{cat.id}</span>
+                    {sel && <span style={{ marginLeft: 'auto', width: '16px', height: '16px', borderRadius: '50%', background: '#F5C842', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', color: '#111', fontWeight: 700 }}>✓</span>}
+                  </button>
+                )
+              })}
+            </div>
+
+            {categoriesEdit.length > 0 && (
+              <button onClick={() => setCategoriesEdit([])}
+                style={{ background: 'none', border: 'none', color: '#A0A0A0', fontSize: '12px', cursor: 'pointer', textDecoration: 'underline', marginBottom: '12px', padding: 0 }}>
+                Tout sélectionner
+              </button>
+            )}
+
+            {/* Bouton sauvegarder */}
+            <button onClick={sauvegarderParametres}
+              style={{ width: '100%', padding: '12px', borderRadius: '10px', border: 'none', background: sauvegardé ? '#16A34A' : '#F5C842', color: '#111', fontSize: '14px', fontWeight: 700, cursor: 'pointer', transition: 'background 0.3s' }}>
+              {sauvegardé ? '✓ Paramètres sauvegardés !' : 'Sauvegarder les paramètres'}
+            </button>
+            <p style={{ fontSize: '11px', color: '#A0A0A0', textAlign: 'center', marginTop: '8px', lineHeight: 1.4 }}>
+              Les nouveaux mots s'appliqueront dès demain.
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Suggérer un mot */}
       <div style={{ padding: '0 18px 32px' }}>
         <p style={labelStyle}>Suggérer un mot</p>
         {suggestionEnvoyee ? (
@@ -128,7 +257,7 @@ export default function ScreenProfil({ streak, motsVus, quizCompletes, scoreTota
               value={suggestion}
               onChange={e => setSuggestion(e.target.value)}
               placeholder="Ex : Schadenfreude — satisfaction éprouvée face au malheur d'autrui..."
-              style={{ width: '100%', background: '#111', border: '1px solid #3A3A3A', borderRadius: '8px', padding: '10px', color: '#F0F0F0', fontSize: '13px', resize: 'none', height: '80px', fontFamily: 'inherit', outline: 'none', marginBottom: '10px' }}
+              style={{ width: '100%', background: '#111', border: '1px solid #3A3A3A', borderRadius: '8px', padding: '10px', color: '#F0F0F0', fontSize: '13px', resize: 'none', height: '80px', fontFamily: 'inherit', outline: 'none', marginBottom: '10px', boxSizing: 'border-box' }}
             />
             <button
               onClick={async () => {
@@ -148,6 +277,7 @@ export default function ScreenProfil({ streak, motsVus, quizCompletes, scoreTota
         )}
       </div>
 
+      {/* Déconnexion */}
       <div style={{ padding: '0 18px 32px' }}>
         <button onClick={async () => {
           await supabase.auth.signOut()
