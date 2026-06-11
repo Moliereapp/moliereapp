@@ -6,55 +6,62 @@ type Props = {
 }
 
 export default function BottomNav({ active, onChange }: Props) {
-  const items: { id: Screen; label: string; icon: string }[] = [
-    { id: 'accueil', label: 'Accueil', icon: '⌂' },
-    { id: 'quiz', label: 'Quiz', icon: '◈' },
-    { id: 'carnet', label: 'Carnet', icon: '✎' },
-    { id: 'ia', label: 'Molière IA', icon: '🤖' },
-    { id: 'pelemele', label: 'Pêle-mêle', icon: '✦' },
-    { id: 'profil', label: 'Profil', icon: '◉' },
+  const items: { id: Screen; icon: string }[] = [
+    { id: 'accueil',  icon: '⌂' },
+    { id: 'quiz',     icon: '◈' },
+    { id: 'carnet',   icon: '✎' },
+    { id: 'ia',       icon: '✦' },
+    { id: 'pelemele', icon: '❋' },
+    { id: 'profil',   icon: '◉' },
   ]
 
   return (
     <nav style={{
-      borderTop: '1px solid #2A2A2A',
       display: 'flex',
-      background: '#111',
-      padding: '6px 0 12px',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '10px 12px 14px',
+      background: 'var(--sepia-bg)',
+      borderTop: '1px solid var(--sepia-border)',
       flexShrink: 0,
+      gap: '4px',
     }}>
-      {items.map(item => (
-        <button
-          key={item.id}
-          onClick={() => onChange(item.id)}
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '3px',
-            border: 'none',
-            background: 'none',
-            padding: '4px 0',
-            color: active === item.id ? '#F5C842' : '#555',
-            fontSize: '9px',
-            fontFamily: 'inherit',
-            fontWeight: 500,
-            cursor: 'pointer',
-            transition: 'color 0.15s',
-          }}
-        >
-          <div style={{
-            width: '4px', height: '4px', borderRadius: '50%',
-            background: '#F5C842',
-            marginBottom: '-2px',
-            opacity: active === item.id ? 1 : 0,
-            transition: 'opacity 0.15s',
-          }} />
-          <span style={{ fontSize: '18px', lineHeight: 1 }}>{item.icon}</span>
-          {item.label}
-        </button>
-      ))}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        background: 'var(--sepia-surface)',
+        borderRadius: '40px',
+        padding: '5px 6px',
+        gap: '2px',
+        boxShadow: '0 2px 16px rgba(44,36,32,0.18)',
+      }}>
+        {items.map(item => {
+          const isActive = active === item.id
+          return (
+            <button
+              key={item.id}
+              onClick={() => onChange(item.id)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: isActive ? '52px' : '40px',
+                height: '36px',
+                borderRadius: '30px',
+                border: 'none',
+                background: isActive ? 'var(--sepia-accent)' : 'transparent',
+                color: isActive ? '#fff' : 'rgba(245,237,216,0.35)',
+                fontSize: '18px',
+                cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.4,0,0.2,1)',
+                flexShrink: 0,
+              }}
+            >
+              {item.icon}
+            </button>
+          )
+        })}
+      </div>
     </nav>
   )
 }
