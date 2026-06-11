@@ -330,11 +330,11 @@ export default function ScreenAccueilV2({ favoris, motsUtilises, onToggleFavori,
     })
   }
 
-  // Positions fixes des 3 bulles
+  // Positions en % de la hauteur/largeur du conteneur
   const positions = [
-    { left: 20, top: 68,  size: 108, animIndex: 0 },
-    { left: 118, top: 178, size: 98,  animIndex: 1 },
-    { left: 26,  top: 300, size: 92,  animIndex: 2 },
+    { leftPct: 8,  topPct: 12, size: 108, animIndex: 0 },
+    { leftPct: 48, topPct: 36, size: 98,  animIndex: 1 },
+    { leftPct: 10, topPct: 60, size: 92,  animIndex: 2 },
   ]
 
   if (loading) return (
@@ -389,7 +389,7 @@ export default function ScreenAccueilV2({ favoris, motsUtilises, onToggleFavori,
       {mots.slice(0, 3).map((mot, i) => {
         const pos = positions[i]
         return (
-          <div key={mot.mot} data-bulle="true" style={{ position: 'absolute', zIndex: 5, left: pos.left, top: pos.top }}>
+          <div key={mot.mot} data-bulle="true" style={{ position: 'absolute', zIndex: 5, left: `${pos.leftPct}%`, top: `${pos.topPct}%` }}>
             <Bulle
               mot={mot}
               index={i}
