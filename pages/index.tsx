@@ -9,7 +9,7 @@ import BottomNav from '../components/BottomNav'
 import ScreenAccueilV2 from '../components/moliere-accueil-v3'
 import ScreenQuiz from '../components/ScreenQuiz'
 import ScreenCarnet from '../components/moliere-carnet'
-import ScreenHistorique from '../components/ScreenHistorique'
+import ScreenPeleMele from '../components/ScreenPeleMele'
 import ScreenProfil from '../components/ScreenProfil'
 import ScreenAuth from '../components/moliere-auth'
 import { MOTS } from '../lib/mots'
@@ -19,7 +19,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
-type Screen = 'accueil' | 'quiz' | 'carnet' | 'ia' | 'historique' | 'profil'
+type Screen = 'accueil' | 'quiz' | 'carnet' | 'ia' | 'pelemele' | 'profil'
 
 type MotIA = {
   mot: string
@@ -39,8 +39,8 @@ export default function Home() {
   const [user, setUser] = useState<any>(null)
   const [bienvenueVu, setBienvenueVu] = useLocalStorage<boolean>('bienvenue_vu', false)
   const [categoriesChoisies, setCategoriesChoisies] = useLocalStorage<string[]>('categories_choisies', [])
-const [niveauChoisi, setNiveauChoisi] = useLocalStorage<string>('niveau_choisi', 'intermediaire')
-const [onboardingVu, setOnboardingVu] = useLocalStorage<boolean>('onboarding_vu', false)
+  const [niveauChoisi, setNiveauChoisi] = useLocalStorage<string>('niveau_choisi', 'intermediaire')
+  const [onboardingVu, setOnboardingVu] = useLocalStorage<boolean>('onboarding_vu', false)
   const [authLoading, setAuthLoading] = useState(true)
 
   const [favoris, setFavoris] = useLocalStorage<string[]>('favoris_v2', [])
@@ -98,12 +98,13 @@ const [onboardingVu, setOnboardingVu] = useLocalStorage<boolean>('onboarding_vu'
       <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
     </div>
   )
+
   if (!bienvenueVu) return (
-  <div style={{ maxWidth: '420px', margin: '0 auto', minHeight: '100vh', background: '#111', display: 'flex', flexDirection: 'column', borderLeft: '1px solid #2A2A2A', borderRight: '1px solid #2A2A2A' }}>
-    <ScreenBienvenue onTermine={() => setBienvenueVu(true)} />
-  </div>
-)
-  
+    <div style={{ maxWidth: '420px', margin: '0 auto', minHeight: '100vh', background: '#111', display: 'flex', flexDirection: 'column', borderLeft: '1px solid #2A2A2A', borderRight: '1px solid #2A2A2A' }}>
+      <ScreenBienvenue onTermine={() => setBienvenueVu(true)} />
+    </div>
+  )
+
   if (!user) return (
     <div style={{ maxWidth: '420px', margin: '0 auto', minHeight: '100vh', background: '#111', display: 'flex', flexDirection: 'column', borderLeft: '1px solid #2A2A2A', borderRight: '1px solid #2A2A2A' }}>
       <Head>
@@ -113,11 +114,13 @@ const [onboardingVu, setOnboardingVu] = useLocalStorage<boolean>('onboarding_vu'
       <ScreenAuth onConnecte={setUser} />
     </div>
   )
-if (!onboardingVu) return (
-  <div style={{ maxWidth: '420px', margin: '0 auto', minHeight: '100vh', background: '#111', display: 'flex', flexDirection: 'column', borderLeft: '1px solid #2A2A2A', borderRight: '1px solid #2A2A2A' }}>
-    <ScreenOnboarding onTermine={(cats, niveau) => { setCategoriesChoisies(cats); setNiveauChoisi(niveau); setOnboardingVu(true) }} />
-  </div>
-)
+
+  if (!onboardingVu) return (
+    <div style={{ maxWidth: '420px', margin: '0 auto', minHeight: '100vh', background: '#111', display: 'flex', flexDirection: 'column', borderLeft: '1px solid #2A2A2A', borderRight: '1px solid #2A2A2A' }}>
+      <ScreenOnboarding onTermine={(cats, niveau) => { setCategoriesChoisies(cats); setNiveauChoisi(niveau); setOnboardingVu(true) }} />
+    </div>
+  )
+
   return (
     <>
       <Head>
@@ -152,18 +155,29 @@ if (!onboardingVu) return (
               onMotsCharges={onMotsCharges}
             />
           )}
-       {screen === 'quiz' && (
-  <ScreenQuiz mots={motsCharges.length > 0 ? motsCharges.filter(m => m.type !== 'expression').map((m, i) => ({
-    id: i + 1, mot: m.mot, nature: m.nature, theme: m.theme,
-    definition: m.definition, etymologie: m.etymologie,
-    exemples: m.exemples, quiz: m.quiz,
-  })) : MOTS} onQuizComplete={onQuizComplete} />
-)}
+          {screen === 'quiz' && (
+            <ScreenQuiz
+              mots={motsCharges.length > 0
+                ? motsCharges.filter(m => m.type !== 'expression').map((m, i) => ({
+                    id: i + 1, mot: m.mot, nature: m.nature, theme: m.theme,
+                    definition: m.definition, etymologie: m.etymologie,
+                    exemples: m.exemples, quiz: m.quiz,
+                  }))
+                : MOTS}
+              onQuizComplete={onQuizComplete}
+            />
+          )}
           {screen === 'carnet' && <ScreenCarnet />}
           {screen === 'ia' && <ScreenMoliereIA />}
-          {screen === 'historique' && <ScreenHistorique />}
+          {screen === 'pelemele' && <ScreenPeleMele />}
           {screen === 'profil' && (
-            <ScreenProfil streak={streak} motsVus={motsVusCount} quizCompletes={quizCompletes} scoreTotal={scoreTotal} motUtilises={motUtilises.length} />
+            <ScreenProfil
+              streak={streak}
+              motsVus={motsVusCount}
+              quizCompletes={quizCompletes}
+              scoreTotal={scoreTotal}
+              motUtilises={motUtilises.length}
+            />
           )}
         </main>
 
