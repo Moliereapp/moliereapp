@@ -1,4 +1,5 @@
-type Screen = 'accueil' | 'quiz' | 'carnet' | 'ia' | 'historique' | 'profil'
+type Screen = 'accueil' | 'quiz' | 'carnet' | 'ia' | 'pelemele' | 'profil'
+
 type Props = {
   active: Screen
   onChange: (screen: Screen) => void
@@ -10,7 +11,7 @@ export default function BottomNav({ active, onChange }: Props) {
     { id: 'quiz', label: 'Quiz', icon: '◈' },
     { id: 'carnet', label: 'Carnet', icon: '✎' },
     { id: 'ia', label: 'Molière IA', icon: '🤖' },
-    { id: 'historique', label: 'Mots appris', icon: '☰' },
+    { id: 'pelemele', label: 'Pêle-mêle', icon: '✦' },
     { id: 'profil', label: 'Profil', icon: '◉' },
   ]
 
